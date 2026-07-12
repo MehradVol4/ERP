@@ -1,7 +1,12 @@
 "use client";
 
 import * as React from "react";
-
+import {
+  IconBasket,
+  IconHexagonNumber1,
+  IconReportMoney,
+  IconSettings,
+} from "@tabler/icons-react";
 import { NavDocuments } from "@/components/nav-documents";
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
@@ -18,15 +23,8 @@ import {
 import {
   LayoutDashboardIcon,
   ListIcon,
-  ChartBarIcon,
-  FolderIcon,
-  UsersIcon,
   CameraIcon,
   FileTextIcon,
-  Settings2Icon,
-  CircleHelpIcon,
-  SearchIcon,
-  DatabaseIcon,
   FileChartColumnIcon,
   FileIcon,
   CommandIcon,
@@ -35,35 +33,30 @@ import { ModeToggle } from "@/app/dashboard/mode-toggle";
 
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
+    name: "admin",
+    email: "admin@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/dashboard",
       icon: <LayoutDashboardIcon />,
     },
     {
-      title: "Lifecycle",
-      url: "#",
+      title: "Categories",
+      url: "/dashboard/categories",
       icon: <ListIcon />,
     },
     {
-      title: "Analytics",
-      url: "#",
-      icon: <ChartBarIcon />,
+      title: "Products",
+      url: "/dashboard/products",
+      icon: <IconBasket stroke={2} />,
     },
     {
-      title: "Projects",
-      url: "#",
-      icon: <FolderIcon />,
-    },
-    {
-      title: "Team",
-      url: "#",
-      icon: <UsersIcon />,
+      title: "Sales",
+      url: "/dashboard/sales",
+      icon: <IconReportMoney stroke={2} />,
     },
   ],
   navClouds: [
@@ -117,34 +110,24 @@ const data = {
   navSecondary: [
     {
       title: "Settings",
-      url: "#",
-      icon: <Settings2Icon />,
-    },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: <CircleHelpIcon />,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: <SearchIcon />,
+      url: "/dashboard/settings",
+      icon: <IconSettings stroke={2} />,
     },
   ],
   documents: [
     {
-      name: "Data Library",
-      url: "#",
-      icon: <DatabaseIcon />,
+      name: "Today's Sales",
+      url: "/dashboard/reports/todayssales",
+      icon: <IconHexagonNumber1 />,
     },
     {
-      name: "Reports",
-      url: "#",
+      name: "Weekly Sales",
+      url: "/dashboard/reports/weeklysales",
       icon: <FileChartColumnIcon />,
     },
     {
-      name: "Word Assistant",
-      url: "#",
+      name: "Monthly Sales",
+      url: "/dashboard/reports/monthlysales",
       icon: <FileIcon />,
     },
   ],
@@ -161,7 +144,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 render={<a href="#" />}
               >
                 <CommandIcon className="size-5!" />
-                <span className="text-base font-semibold">Acme Inc.</span>
+                <span className="text-base font-semibold">ERP APP</span>
                 <ModeToggle />
               </SidebarMenuButton>
             </SidebarMenuItem>
