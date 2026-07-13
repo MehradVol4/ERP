@@ -9,8 +9,19 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(async (config) => {
     const session = await getSession();
-    if (session?.user.jwt) {
-        config.headers.Authorization = `Bearer ${session.user.jwt}`;
+    if (session?.jwt) {
+        config.headers.Authorization = `Bearer ${session.jwt}`;
     }
-    return config ;
+    return config;
 });
+
+axiosInstance.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        const errMessage = handleApiError(error);
+        toast.error(errMessage);
+        return Promise.reject(error);
+    }
+);
+
+export default axiosInstance;

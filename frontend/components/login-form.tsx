@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { signIn } from "next-auth/react"
+import { toast } from "sonner"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -27,12 +28,10 @@ export function LoginForm({
   const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    setError(null)
     setLoading(true)
 
     const res = await signIn("credentials", {
@@ -44,10 +43,11 @@ export function LoginForm({
     setLoading(false)
 
     if (res?.error) {
-      setError("Invalid email or password.")
+      toast.error("Invalid email or password.")
       return
     }
 
+    toast.success("Welcome back! Redirecting...")
     router.push("/dashboard")
     router.refresh()
   }
@@ -90,9 +90,6 @@ export function LoginForm({
                   required
                 />
               </Field>
-              {error && (
-                <p className="text-sm text-destructive text-center">{error}</p>
-              )}
               <Field>
                 <Button type="submit" disabled={loading}>
                   {loading ? "Signing in..." : "Login"}
