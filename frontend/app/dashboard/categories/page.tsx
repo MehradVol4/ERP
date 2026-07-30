@@ -1,4 +1,6 @@
-import React from "react";
+"use client" 
+
+import React, { useEffect, useState } from "react";
 import { DataTable } from "./features/data-table";
 import { columns } from "./features/columns";
 
@@ -11,6 +13,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import axios from "axios";
+import axiosInstance from "@/lib/axios";
 
 type data = {
   id: string;
@@ -19,22 +23,36 @@ type data = {
   email: string;
 };
 
-export const data: data[] = [
-  {
-    id: "728ed52f",
-    amount: 100,
-    status: "pending",
-    email: "john.doe@gmail.com",
-  },
-  {
-    id: "4789ehu",
-    amount: 200,
-    status: "processing",
-    email: "jack.nic@gmail.com",
-  },
-];
+
+interface Category  {
+  id : number ;
+  name : string ;
+  description : string ;
+  documentId : number ;
+
+}
 
 const Page = () => {
+
+  const [categories,setCategories] = useState([]);
+  const [loading,setLoading] = useState(true);
+
+  useEffect(function () {
+    axiosInstance.get("/api/categories").then((response)=> {
+      const apiData = response.data.data.map((item : Category)=>({
+        id: item.id,
+        name : item.name ,
+        description : item.description ,
+        documentId : item.documentId , 
+      })) ;
+      setCategories(apiData) ;
+    })
+    .catch((error) => {
+      console.error("Failed to fetch categories:",error) ;
+    })
+    .finally(()=>setLoading(false)) ;
+  },[])
+
   return (
     <div className="py-4 md:py-6 px-4 lg:px-6">
       <Card className="@container/card">
@@ -49,7 +67,7 @@ const Page = () => {
         </CardHeader>
 
         <CardContent>
-          <DataTable columns={columns} data={data} />
+          {loading ? <p className="text-muted-foreground">Loading...</p> : <DataTable columns={columns} data={categories} />}
         </CardContent>
       </Card>
     </div>

@@ -1,6 +1,9 @@
 "use client";
 import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
+import { EllipsisVerticalIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export type data = {
   id: string;
@@ -15,15 +18,38 @@ export const columns: ColumnDef<data>[] = [
     header: "ID",
   },
   {
-    accessorKey: "amount",
-    header: "Amount",
+    accessorKey: "name",
+    header: "Name",
   },
   {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: "description",
+    header: "Description",
   },
-  {
-    accessorKey: "email",
-    header: "Email",
+   {
+    id: "actions",
+    cell: () => (
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={
+            <Button
+              variant="ghost"
+              className="flex size-8 text-muted-foreground data-open:bg-muted"
+              size="icon"
+            />
+          }
+        >
+          <EllipsisVerticalIcon
+          />
+          <span className="sr-only">Open menu</span>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-32">
+          <DropdownMenuItem>Edit</DropdownMenuItem>
+          <DropdownMenuItem>Make a copy</DropdownMenuItem>
+          <DropdownMenuItem>Favorite</DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    ),
   },
 ];
