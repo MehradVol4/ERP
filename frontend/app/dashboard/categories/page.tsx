@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { DataTable } from "./features/data-table";
-import { columns } from "./features/columns";
+import { columns, type Category } from "./features/columns";
 
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -22,58 +21,80 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import axiosInstance from "@/lib/axios";
 
-type data = {
-  id: string;
-  amount: number;
-  status: "pending" | "processing" | "success" | "failed";
-  email: string;
+type Pagination = {
+  page: number;
+  pageSize: number;
+  pageCount: number;
+  total: number;
 };
 
-interface Category {
-  id: number;
-  name: string;
-  description: string;
-  documentId: number;
-}
+type CategoriesResponse = {
+  data: Category[];
+  meta: { pagination: Pagination };
+};
+
+type LoadedPage = {
+  key: string;
+  rows: Category[];
+  meta: Pagination | null;
+};
+
+const queryKey = (page: number, pageSize: number) => `${page}|${pageSize}`;
 
 const Page = () => {
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [meta, setMeta] = useState(null);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
+  const [loaded, setLoaded] = useState<LoadedPage | null>(null);
+
+  const loading = loaded?.key !== queryKey(page, pageSize);
+  const categories = loaded?.rows ?? [];
+  const meta = loaded?.meta ?? null;
 
   useEffect(
     function () {
+      let active = true;
+      const key = queryKey(page, pageSize);
+
       axiosInstance
-        .get(
+        .get<CategoriesResponse>(
           `/api/categories?pagination[page]=${page}&pagination[pageSize]=${pageSize}`,
         )
         .then((response) => {
-          const apiData = response.data.data.map((item: Category) => ({
+          if (!active) return;
+          const rows = response.data.data.map((item) => ({
             id: item.id,
             name: item.name,
             description: item.description,
             documentId: item.documentId,
           }));
-          setCategories(apiData);
-          setMeta(response.data.meta.pagination);
+          setLoaded({ key, rows, meta: response.data.meta.pagination });
         })
         .catch((error) => {
+          if (!active) return;
+          
           console.error("Failed to fetch categories:", error);
-        })
-        .finally(() => setLoading(false));
+          setLoaded({ key, rows: [], meta: null });
+        });
+
+      return () => {
+        active = false;
+      };
     },
     [page, pageSize],
   );
 
-  const handlePageSize = (value) => {
+  const handlePageSize = (value: string | null) => {
+    if (value === null) return;
     setPageSize(Number(value));
     setPage(1);
   };
+
+  const pageCount = meta?.pageCount ?? 1;
+  const canGoPrevious = page > 1 && !loading;
+  const canGoNext = page < pageCount && !loading;
 
   return (
     <div className="py-4 md:py-6 px-4 lg:px-6">
@@ -94,27 +115,55 @@ const Page = () => {
           ) : (
             <DataTable columns={columns} data={categories} />
           )}
-          <div className="flex justify-between items-center mt-4 text-sm text-muted-foreground">
+
+          <div className="flex flex-col gap-4 mt-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-2">
+              <span>Rows per page</span>
+              <Select value={String(pageSize)} onValueChange={handlePageSize}>
+                <SelectTrigger className="w-20 h-8" aria-label="Rows per page">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="15">15</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             {meta && (
-              <>
-                {categories.length === 0
+              <span>
+                {meta.total === 0
                   ? "No Rows"
                   : `Showing ${(meta.page - 1) * meta.pageSize + 1} to ${(meta.page - 1) * meta.pageSize + categories.length} of ${meta.total} rows`}
-              </>
+              </span>
             )}
+
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                aria-label="Previous page"
+                disabled={!canGoPrevious}
+                onClick={() => setPage((current) => current - 1)}
+              >
+                <ChevronLeftIcon />
+              </Button>
+              <span>
+                Page {page} of {pageCount}
+              </span>
+              <Button
+                variant="outline"
+                size="icon"
+                aria-label="Next page"
+                disabled={!canGoNext}
+                onClick={() => setPage((current) => current + 1)}
+              >
+                <ChevronRightIcon />
+              </Button>
+            </div>
           </div>
         </CardContent>
-        <Select value={String(pageSize)} onValueChange={handlePageSize}>
-          <SelectTrigger className="w-45 h-8">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="5">5</SelectItem>
-            <SelectItem value="10">10</SelectItem>
-            <SelectItem value="15">15</SelectItem>
-          </SelectContent>
-        </Select>
-        <span>Rows per page</span>
       </Card>
     </div>
   );

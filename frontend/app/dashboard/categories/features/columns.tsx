@@ -5,14 +5,14 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { EllipsisVerticalIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export type data = {
-  id: string;
-  amount: number;
-  status: "pending" | "processing" | "success" | "failed";
-  email: string;
+export type Category = {
+  id: number;
+  documentId: string;
+  name: string;
+  description: string | null;
 };
 
-export const columns: ColumnDef<data>[] = [
+export const columns: ColumnDef<Category>[] = [
   {
     accessorKey: "id",
     header: "ID",
