@@ -36,9 +36,12 @@ const Page = () => {
 
   const [categories,setCategories] = useState([]);
   const [loading,setLoading] = useState(true);
+  const [meta,setMeta] = useState(null);
+  const [page,setPage] = useState(1);
+  const [pageSize,setPageSize] = useState(5);
 
   useEffect(function () {
-    axiosInstance.get("/api/categories").then((response)=> {
+    axiosInstance.get(`/api/categories?pagination[page]=${page}&pagination[pageSize]=${pageSize}`).then((response)=> {
       const apiData = response.data.data.map((item : Category)=>({
         id: item.id,
         name : item.name ,
@@ -46,12 +49,13 @@ const Page = () => {
         documentId : item.documentId , 
       })) ;
       setCategories(apiData) ;
+      setMeta(response.data.meta.pagination) ;
     })
     .catch((error) => {
       console.error("Failed to fetch categories:",error) ;
     })
     .finally(()=>setLoading(false)) ;
-  },[])
+  },[page,pageSize])
 
   return (
     <div className="py-4 md:py-6 px-4 lg:px-6">
