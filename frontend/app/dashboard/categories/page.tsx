@@ -5,6 +5,15 @@ import { DataTable } from "./features/data-table";
 import { columns } from "./features/columns";
 
 import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+import {
   Card,
   CardAction,
   CardContent,
@@ -95,6 +104,17 @@ const Page = () => {
             )}
           </div>
         </CardContent>
+        <Select value={String(pageSize)} onValueChange={handlePageSize}>
+          <SelectTrigger className="w-45 h-8">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="5">5</SelectItem>
+            <SelectItem value="10">10</SelectItem>
+            <SelectItem value="15">15</SelectItem>
+          </SelectContent>
+        </Select>
+        <span>Rows per page</span>
       </Card>
     </div>
   );
