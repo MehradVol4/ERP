@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import { EllipsisVerticalIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ColumnFilter from "@/components/ColumnFilter";
 
 export type Category = {
   id: number;
@@ -19,7 +20,10 @@ export const columns: ColumnDef<Category>[] = [
   },
   {
     accessorKey: "name",
-    header: "Name",
+    header: () => (
+      <ColumnFilter columnLabel="Name" placeholder="Filter name...."/>
+    ),
+    cell: (info) => info.getValue(),
   },
   {
     accessorKey: "description",
