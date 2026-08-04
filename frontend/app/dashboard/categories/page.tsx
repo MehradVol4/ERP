@@ -1,8 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { DataTable } from "./features/data-table";
-import { columns, type Category } from "./features/columns";
+import {
+  columns,
+  type Category,
+  type CategoryFilters,
+} from "./features/columns";
 
 import {
   Select,
@@ -48,6 +52,17 @@ const Page = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [loaded, setLoaded] = useState<LoadedPage | null>(null);
+  const [filters, setFilters] = useState<CategoryFilters>({});
+
+  const handleFilterChange = (key: keyof CategoryFilters, value: string) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+    setPage(1);
+  };
+
+  const tableColumns = useMemo(
+    () => columns(filters, handleFilterChange),
+    [filters],
+  );
 
   const loading = loaded?.key !== queryKey(page, pageSize);
   const categories = loaded?.rows ?? [];
@@ -113,7 +128,7 @@ const Page = () => {
           {loading ? (
             <p className="text-muted-foreground">Loading...</p>
           ) : (
-            <DataTable columns={columns} data={categories} />
+            <DataTable columns={tableColumns} data={categories} />
           )}
 
           <div className="flex flex-col gap-4 mt-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">

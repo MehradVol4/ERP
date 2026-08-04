@@ -32,12 +32,12 @@ const ColumnFilter: React.FC<ColumnFilterProps> = ({
   }, [columnValue]);
 
   const handleApply = () => {
-    onChange(inputValue);
+    onChange?.(inputValue);
     setOpen(false);
   };
 
   const handleClear = () => {
-    onChange("");
+    onChange?.("");
     setInputValue("");
   };
 
@@ -55,15 +55,17 @@ const ColumnFilter: React.FC<ColumnFilterProps> = ({
         </Button>
       ) : (
         <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger>
-            <Button variant="ghost" size="icon" className="h-6 w-6 p-1">
-              <Funnel className="h-4 w-4" />
-            </Button>
+          <PopoverTrigger
+            render={
+              <Button variant="ghost" size="icon" className="h-6 w-6 p-1" />
+            }
+          >
+            <Funnel className="h-4 w-4" />
           </PopoverTrigger>
           <PopoverContent>
             <Input
               placeholder={placeholder}
-              value={columnValue}
+              value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               className="mb-2"
             />

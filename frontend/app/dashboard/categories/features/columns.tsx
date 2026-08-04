@@ -13,7 +13,19 @@ export type Category = {
   description: string | null;
 };
 
-export const columns: ColumnDef<Category>[] = [
+export type CategoryFilters = {
+  name?: string;
+};
+
+export type HandleFilterChange = (
+  key: keyof CategoryFilters,
+  value: string,
+) => void;
+
+export const columns = (
+  filters: CategoryFilters,
+  handleFilterChange: HandleFilterChange,
+): ColumnDef<Category>[] => [
   {
     accessorKey: "id",
     header: "ID",
@@ -21,8 +33,14 @@ export const columns: ColumnDef<Category>[] = [
   {
     accessorKey: "name",
     header: () => (
-      <ColumnFilter columnLabel="Name" placeholder="Filter name...."/>
+      <ColumnFilter 
+      columnLabel="Name" 
+      placeholder="Filter name...." 
+      columnValue={filters.name || ""}
+      onChange={(val)=> handleFilterChange("name",val)}
+      />
     ),
+    
     cell: (info) => info.getValue(),
   },
   {
