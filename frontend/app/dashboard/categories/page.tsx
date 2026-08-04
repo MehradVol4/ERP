@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { DataTable } from "./features/data-table";
 import {
   columns,
@@ -46,7 +46,11 @@ type LoadedPage = {
   meta: Pagination | null;
 };
 
-const queryKey = (page: number, pageSize: number) => `${page}|${pageSize}`;
+const queryKey = (
+  page: number,
+  pageSize: number,
+  filters: CategoryFilters,
+) => `${page}|${pageSize}|${filters.name ?? ""}`;
 
 const Page = () => {
   const [page, setPage] = useState(1);
@@ -54,29 +58,35 @@ const Page = () => {
   const [loaded, setLoaded] = useState<LoadedPage | null>(null);
   const [filters, setFilters] = useState<CategoryFilters>({});
 
-  const handleFilterChange = (key: keyof CategoryFilters, value: string) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
-    setPage(1);
-  };
+  const handleFilterChange = useCallback(
+    (key: keyof CategoryFilters, value: string) => {
+      setFilters((prev) => ({ ...prev, [key]: value }));
+      setPage(1);
+    },
+    [],
+  );
 
   const tableColumns = useMemo(
     () => columns(filters, handleFilterChange),
-    [filters],
+    [filters, handleFilterChange],
   );
 
-  const loading = loaded?.key !== queryKey(page, pageSize);
+  const loading = loaded?.key !== queryKey(page, pageSize, filters);
   const categories = loaded?.rows ?? [];
   const meta = loaded?.meta ?? null;
 
   useEffect(
     function () {
       let active = true;
-      const key = queryKey(page, pageSize);
+      const key = queryKey(page, pageSize, filters);
+
+      let query = `/api/categories?pagination[page]=${page}&pagination[pageSize]=${pageSize}`;
+      if (filters.name) {
+        query += `&filters[name][$containsi]=${encodeURIComponent(filters.name)}`;
+      }
 
       axiosInstance
-        .get<CategoriesResponse>(
-          `/api/categories?pagination[page]=${page}&pagination[pageSize]=${pageSize}`,
-        )
+        .get<CategoriesResponse>(query)
         .then((response) => {
           if (!active) return;
           const rows = response.data.data.map((item) => ({
@@ -98,7 +108,7 @@ const Page = () => {
         active = false;
       };
     },
-    [page, pageSize],
+    [page, pageSize, filters],
   );
 
   const handlePageSize = (value: string | null) => {

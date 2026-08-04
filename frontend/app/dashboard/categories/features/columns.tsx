@@ -1,7 +1,13 @@
 "use client";
 import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { EllipsisVerticalIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ColumnFilter from "@/components/ColumnFilter";
@@ -15,6 +21,7 @@ export type Category = {
 
 export type CategoryFilters = {
   name?: string;
+  description?:string;
 };
 
 export type HandleFilterChange = (
@@ -33,21 +40,28 @@ export const columns = (
   {
     accessorKey: "name",
     header: () => (
-      <ColumnFilter 
-      columnLabel="Name" 
-      placeholder="Filter name...." 
-      columnValue={filters.name || ""}
-      onChange={(val)=> handleFilterChange("name",val)}
+      <ColumnFilter
+        columnLabel="Name"
+        placeholder="Filter name...."
+        columnValue={filters.name || ""}
+        onChange={(val) => handleFilterChange("name", val)}
       />
     ),
-    
+
     cell: (info) => info.getValue(),
   },
   {
     accessorKey: "description",
-    header: "Description",
+    header: () => (
+      <ColumnFilter
+        columnLabel="Description"
+        placeholder="Filter description"
+        columnValue={filters.description || ""}
+        onChange={(val) => handleFilterChange("description", val)}
+      />
+    ),
   },
-   {
+  {
     id: "actions",
     cell: () => (
       <DropdownMenu>
@@ -60,8 +74,7 @@ export const columns = (
             />
           }
         >
-          <EllipsisVerticalIcon
-          />
+          <EllipsisVerticalIcon />
           <span className="sr-only">Open menu</span>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-32">
