@@ -27,6 +27,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import axiosInstance from "@/lib/axios";
+import { Sheet } from "@/components/ui/sheet";
+import New from "./features/new";
 
 type Pagination = {
   page: number;
@@ -46,17 +48,15 @@ type LoadedPage = {
   meta: Pagination | null;
 };
 
-const queryKey = (
-  page: number,
-  pageSize: number,
-  filters: CategoryFilters,
-) => `${page}|${pageSize}|${filters.name ?? ""}`;
+const queryKey = (page: number, pageSize: number, filters: CategoryFilters) =>
+  `${page}|${pageSize}|${filters.name ?? ""}`;
 
 const Page = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
-  const [loaded, setLoaded] = useState<LoadedPage | null>(null);
+  const [loaded, setLoaded] = useState<LoadedPage | null >(null);
   const [filters, setFilters] = useState<CategoryFilters>({});
+  const [sheetOpen,setSheetOpen] = useState(false);
 
   const handleFilterChange = useCallback(
     (key: keyof CategoryFilters, value: string) => {
@@ -75,41 +75,41 @@ const Page = () => {
   const categories = loaded?.rows ?? [];
   const meta = loaded?.meta ?? null;
 
-  useEffect(
-    function () {
-      let active = true;
-      const key = queryKey(page, pageSize, filters);
+  const fetchData = () => {
 
-      let query = `/api/categories?pagination[page]=${page}&pagination[pageSize]=${pageSize}`;
-      if (filters.name) {
-        query += `&filters[name][$containsi]=${encodeURIComponent(filters.name)}`;
-      }
+    setLoaded(true);
+    let active = true;
+    const key = queryKey(page, pageSize, filters);
 
-      axiosInstance
-        .get<CategoriesResponse>(query)
-        .then((response) => {
-          if (!active) return;
-          const rows = response.data.data.map((item) => ({
-            id: item.id,
-            name: item.name,
-            description: item.description,
-            documentId: item.documentId,
-          }));
-          setLoaded({ key, rows, meta: response.data.meta.pagination });
-        })
-        .catch((error) => {
-          if (!active) return;
-          
-          console.error("Failed to fetch categories:", error);
-          setLoaded({ key, rows: [], meta: null });
-        });
+    let query = `/api/categories?pagination[page]=${page}&pagination[pageSize]=${pageSize}`;
+    if (filters.name) {
+      query += `&filters[name][$containsi]=${encodeURIComponent(filters.name)}`;
+    }
+    axiosInstance
+      .get<CategoriesResponse>(query)
+      .then((response) => {
+        if (!active) return;
+        const rows = response.data.data.map((item) => ({
+          id: item.id,
+          name: item.name,
+          description: item.description,
+          documentId: item.documentId,
+        }));
+        setLoaded({ key, rows, meta: response.data.meta.pagination });
+      })
+      .catch((error) => {
+        if (!active) return;
 
-      return () => {
-        active = false;
-      };
-    },
-    [page, pageSize, filters],
-  );
+        console.error("Failed to fetch categories:", error);
+        setLoaded({ key, rows: [], meta: null });
+      });
+
+    return () => {
+      active = false;
+    };
+  };
+
+  useEffect(function () {fetchData()}, [page, pageSize, filters]);
 
   const handlePageSize = (value: string | null) => {
     if (value === null) return;
@@ -130,7 +130,10 @@ const Page = () => {
             <span>List of categories</span>
           </CardDescription>
           <CardAction>
-            <Button>Add new record</Button>
+            <Button onClick={ () => setSheetOpen(true) }>Add new record</Button>
+            <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+              <New/>
+            </Sheet>
           </CardAction>
         </CardHeader>
 
