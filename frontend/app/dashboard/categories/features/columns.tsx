@@ -33,6 +33,7 @@ export const columns = (
   filters: CategoryFilters,
   handleFilterChange: HandleFilterChange,
   onEdit: (category: Category) => void,
+  onDelete: (documentId: string) => void,
 ): ColumnDef<Category>[] => [
   {
     accessorKey: "id",
@@ -85,7 +86,14 @@ export const columns = (
           <DropdownMenuItem>Make a copy</DropdownMenuItem>
           <DropdownMenuItem>Favorite</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+          <DropdownMenuItem
+            variant="destructive"
+            onClick={() => {
+              onDelete(row.original.documentId);
+            }}
+          >
+            Delete
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     ),

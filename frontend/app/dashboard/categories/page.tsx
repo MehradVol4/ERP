@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "sonner";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { DataTable } from "./features/data-table";
 import {
@@ -66,21 +67,8 @@ const Page = () => {
     },
     [],
   );
-
-  const tableColumns = useMemo(
-    () =>
-      columns(filters, handleFilterChange, (item) => {
-        setSelectedItem(item);
-        setSheetOpen(true);
-      }),
-    [filters, handleFilterChange],
-  );
-
-  const loading = loaded?.key !== queryKey(page, pageSize, filters);
-  const categories = loaded?.rows ?? [];
-  const meta = loaded?.meta ?? null;
-
   const fetchData = () => {
+    //@ts-expect-error
     setLoaded(true);
     let active = true;
     const key = queryKey(page, pageSize, filters);
@@ -113,6 +101,34 @@ const Page = () => {
     };
   };
 
+  const handleDelete = useCallback(async (documentId: string) => {
+    try {
+      await axiosInstance.delete(`/api/categories/${documentId}`);
+      toast.success("Category deleted!");
+      fetchData();
+    } catch (error) {
+      toast.error("Failed to delete category");
+      console.error(error);
+    }
+  }, []);
+  const tableColumns = useMemo(
+    () =>
+      columns(
+        filters,
+        handleFilterChange,
+        (item) => {
+          setSelectedItem(item);
+          setSheetOpen(true);
+        },
+        handleDelete,
+      ),
+    [filters, handleFilterChange,handleDelete],
+  );
+
+  const loading = loaded?.key !== queryKey(page, pageSize, filters);
+  const categories = loaded?.rows ?? [];
+  const meta = loaded?.meta ?? null;
+
   useEffect(
     function () {
       fetchData();
@@ -125,11 +141,7 @@ const Page = () => {
     setPageSize(Number(value));
     setPage(1);
   };
-
-  const sthColumns = columns(filters, handleFilterChange, (item) => {
-    setSelectedItem(item);
-    setSheetOpen(true);
-  });
+  //@ts-ignore
 
   const pageCount = meta?.pageCount ?? 1;
   const canGoPrevious = page > 1 && !loading;
