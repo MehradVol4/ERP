@@ -21,7 +21,7 @@ export type Category = {
 
 export type CategoryFilters = {
   name?: string;
-  description?:string;
+  description?: string;
 };
 
 export type HandleFilterChange = (
@@ -32,6 +32,7 @@ export type HandleFilterChange = (
 export const columns = (
   filters: CategoryFilters,
   handleFilterChange: HandleFilterChange,
+  onEdit: (category: Category) => void,
 ): ColumnDef<Category>[] => [
   {
     accessorKey: "id",
@@ -63,7 +64,7 @@ export const columns = (
   },
   {
     id: "actions",
-    cell: () => (
+    cell: ({ row }) => (
       <DropdownMenu>
         <DropdownMenuTrigger
           render={
@@ -78,7 +79,9 @@ export const columns = (
           <span className="sr-only">Open menu</span>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-32">
-          <DropdownMenuItem>Edit</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onEdit(row.original)}>
+            Edit
+          </DropdownMenuItem>
           <DropdownMenuItem>Make a copy</DropdownMenuItem>
           <DropdownMenuItem>Favorite</DropdownMenuItem>
           <DropdownMenuSeparator />

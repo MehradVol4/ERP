@@ -68,7 +68,11 @@ const Page = () => {
   );
 
   const tableColumns = useMemo(
-    () => columns(filters, handleFilterChange),
+    () =>
+      columns(filters, handleFilterChange, (item) => {
+        setSelectedItem(item);
+        setSheetOpen(true);
+      }),
     [filters, handleFilterChange],
   );
 
@@ -121,6 +125,11 @@ const Page = () => {
     setPageSize(Number(value));
     setPage(1);
   };
+
+  const sthColumns = columns(filters, handleFilterChange, (item) => {
+    setSelectedItem(item);
+    setSheetOpen(true);
+  });
 
   const pageCount = meta?.pageCount ?? 1;
   const canGoPrevious = page > 1 && !loading;

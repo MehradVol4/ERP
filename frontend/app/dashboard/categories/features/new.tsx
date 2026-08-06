@@ -6,16 +6,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import {
-  Field,
-  FieldLabel,
-  FieldError,
-} from "@/components/ui/field";
+import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -38,10 +34,31 @@ function New({ item = null, onSuccess, isOpen }) {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  useEffect(() => {
+    if (!isOpen) return;
 
-    await axiosInstance.post("/api/categories",{data:values});
-    
+    if (item) {
+      form.reset({
+        name: item.name || "",
+        description: item.description || "",
+      });
+    } else {
+      form.reset({
+        name: "",
+        description: "",
+      });
+    }
+  }, [item, isOpen, form]);
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setLoading(true);
+
+    if (item?.id) {
+      await axiosInstance.put(`/api/categories/${item.documentId}`, { data: values });
+    } else {
+      await axiosInstance.post("/api/categories", { data: values });
+    }
+
     toast.success("Category created !");
     if (onSuccess) onSuccess();
 
@@ -67,9 +84,7 @@ function New({ item = null, onSuccess, isOpen }) {
                 {...form.register("name")}
               />
 
-              <FieldError>
-                {form.formState.errors.name?.message}
-              </FieldError>
+              <FieldError>{form.formState.errors.name?.message}</FieldError>
             </Field>
             <Field>
               <FieldLabel htmlFor="description">Description</FieldLabel>
