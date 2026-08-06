@@ -2,12 +2,11 @@
 
 import {
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -15,73 +14,79 @@ import { toast } from "sonner";
 import {
   Field,
   FieldLabel,
-  FieldDescription,
   FieldError,
 } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import axiosInstance from "@/lib/axios";
 
 const formSchema = z.object({
-  name_1959017416: z.string().min(1),
+  name: z.string().min(1),
   description: z.string().optional(),
 });
 
-function New() {
+//@ts-expect-error
+
+function New({ item = null, onSuccess, isOpen }) {
+  const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+    },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      console.log(values);
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>,
-      );
-    } catch (error) {
-      console.error("Form submission error", error);
-      toast.error("Failed to submit the form. Please try again.");
-    }
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+
+    await axiosInstance.post("/api/categories",{data:values});
+    
+    toast.success("Category created !");
+    if (onSuccess) onSuccess();
+
+    setLoading(false);
   }
 
   return (
+    //@ts-ignore
     <>
       <SheetTrigger />
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>Add a new Category</SheetTitle>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-8 px-6 py-5"
-            >
-              <Field>
-                <FieldLabel htmlFor="name_1959017416">Name</FieldLabel>
-                <Input
-                  id="name_1959017416"
-                  placeholder="Name of the category"
-                  {...form.register("name_1959017416")}
-                />
+          <SheetTitle>{item?.id ? "Edit" : "Add new"} Category</SheetTitle>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-8 px-6 py-5"
+          >
+            <Field>
+              <FieldLabel htmlFor="name_1959017416">Name</FieldLabel>
+              <Input
+                id="name_1959017416"
+                placeholder="Name of the category"
+                {...form.register("name")}
+              />
 
-                <FieldError>
-                  {form.formState.errors.name_1959017416?.message}
-                </FieldError>
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="description">Description</FieldLabel>
-                <Textarea
-                  id="description"
-                  placeholder="Category's description"
-                  {...form.register("description")}
-                />
+              <FieldError>
+                {form.formState.errors.name?.message}
+              </FieldError>
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="description">Description</FieldLabel>
+              <Textarea
+                id="description"
+                placeholder="Category's description"
+                {...form.register("description")}
+              />
 
-                <FieldError>
-                  {form.formState.errors.description?.message}
-                </FieldError>
-              </Field>
-              <Button type="submit">Submit</Button>
-            </form>
+              <FieldError>
+                {form.formState.errors.description?.message}
+              </FieldError>
+            </Field>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Saving" : "Save changes"}
+            </Button>
+          </form>
         </SheetHeader>
       </SheetContent>
     </>

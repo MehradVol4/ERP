@@ -54,9 +54,10 @@ const queryKey = (page: number, pageSize: number, filters: CategoryFilters) =>
 const Page = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
-  const [loaded, setLoaded] = useState<LoadedPage | null >(null);
+  const [loaded, setLoaded] = useState<LoadedPage | null>(null);
   const [filters, setFilters] = useState<CategoryFilters>({});
-  const [sheetOpen,setSheetOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
 
   const handleFilterChange = useCallback(
     (key: keyof CategoryFilters, value: string) => {
@@ -76,7 +77,6 @@ const Page = () => {
   const meta = loaded?.meta ?? null;
 
   const fetchData = () => {
-
     setLoaded(true);
     let active = true;
     const key = queryKey(page, pageSize, filters);
@@ -109,7 +109,12 @@ const Page = () => {
     };
   };
 
-  useEffect(function () {fetchData()}, [page, pageSize, filters]);
+  useEffect(
+    function () {
+      fetchData();
+    },
+    [page, pageSize, filters],
+  );
 
   const handlePageSize = (value: string | null) => {
     if (value === null) return;
@@ -130,9 +135,23 @@ const Page = () => {
             <span>List of categories</span>
           </CardDescription>
           <CardAction>
-            <Button onClick={ () => setSheetOpen(true) }>Add new record</Button>
+            <Button
+              onClick={() => {
+                setSheetOpen(true);
+                setSelectedItem(null);
+              }}
+            >
+              Add new record
+            </Button>
             <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-              <New/>
+              <New
+                item={selectedItem}
+                isOpen={sheetOpen}
+                onSuccess={() => {
+                  setSheetOpen(false);
+                  fetchData();
+                }}
+              />
             </Sheet>
           </CardAction>
         </CardHeader>
