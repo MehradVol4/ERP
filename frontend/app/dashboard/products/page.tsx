@@ -38,7 +38,7 @@ type Pagination = {
   total: number;
 };
 
-type CategoriesResponse = {
+type ProductsResponse = {
   data: Product[];
   meta: { pagination: Pagination };
 };
@@ -78,21 +78,23 @@ const Page = () => {
       query += `&filters[name][$containsi]=${encodeURIComponent(filters.name)}`;
     }
     axiosInstance
-      .get<CategoriesResponse>(query)
+      .get<ProductsResponse>(query)
       .then((response) => {
         if (!active) return;
         const rows = response.data.data.map((item) => ({
           id: item.id,
           name: item.name,
           description: item.description,
-          documentId: item.documentId,
+          price: item.price,
+          stock : item.stock,
         }));
+        //@ts-expect-error
         setLoaded({ key, rows, meta: response.data.meta.pagination });
       })
       .catch((error) => {
         if (!active) return;
 
-        console.error("Failed to fetch categories:", error);
+        console.error("Failed to fetch products:", error);
         setLoaded({ key, rows: [], meta: null });
       });
 
@@ -126,7 +128,7 @@ const Page = () => {
   );
 
   const loading = loaded?.key !== queryKey(page, pageSize, filters);
-  const categories = loaded?.rows ?? [];
+  const products = loaded?.rows ?? [];
   const meta = loaded?.meta ?? null;
 
   useEffect(
@@ -181,7 +183,7 @@ const Page = () => {
           {loading ? (
             <p className="text-muted-foreground">Loading...</p>
           ) : (
-            <DataTable columns={tableColumns} data={categories} />
+            <DataTable columns={tableColumns} data={products} />
           )}
 
           <div className="flex flex-col gap-4 mt-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
@@ -203,7 +205,7 @@ const Page = () => {
               <span>
                 {meta.total === 0
                   ? "No Rows"
-                  : `Showing ${(meta.page - 1) * meta.pageSize + 1} to ${(meta.page - 1) * meta.pageSize + categories.length} of ${meta.total} rows`}
+                  : `Showing ${(meta.page - 1) * meta.pageSize + 1} to ${(meta.page - 1) * meta.pageSize + products.length} of ${meta.total} rows`}
               </span>
             )}
 

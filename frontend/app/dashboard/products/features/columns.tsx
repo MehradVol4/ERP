@@ -57,14 +57,29 @@ export const columns = (
 
     cell: (info) => info.getValue(),
   },
-  {
-    accessorKey: "description",
+    {
+    accessorKey: "price",
     header: () => (
       <ColumnFilter
-        columnLabel="Description"
-        placeholder="Filter description"
-        columnValue={filters.description || ""}
-        onChange={(val) => handleFilterChange("description", val)}
+        columnLabel="Price"
+        placeholder="Filter pricce...."
+        //@ts-expect-error
+        columnValue={filters.price}
+        onChange={(val) => handleFilterChange("price", val)}
+      />
+    ),
+
+    cell: (info) => info.getValue(),
+  },
+    {
+    accessorKey: "stock",
+    header: () => (
+      <ColumnFilter
+        columnLabel="Stock"
+        placeholder="Filter stock"
+        //@ts-expect-error
+        columnValue={filters.stock || ""}
+        onChange={(val) => handleFilterChange("stock", val)}
       />
     ),
   },
