@@ -71,7 +71,7 @@ function New({ item = null, onSuccess, isOpen }) {
       <SheetTrigger />
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>{item?.id ? "Edit" : "Add new"} Category</SheetTitle>
+          <SheetTitle>{item?.id ? "Edit" : "Add new"} Product</SheetTitle>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-8 px-6 py-5"
@@ -80,7 +80,7 @@ function New({ item = null, onSuccess, isOpen }) {
               <FieldLabel htmlFor="name_1959017416">Name</FieldLabel>
               <Input
                 id="name_1959017416"
-                placeholder="Name of the category"
+                placeholder="Name of the Product"
                 {...form.register("name")}
               />
 
@@ -90,7 +90,7 @@ function New({ item = null, onSuccess, isOpen }) {
               <FieldLabel htmlFor="description">Description</FieldLabel>
               <Textarea
                 id="description"
-                placeholder="Category's description"
+                placeholder="Product's description"
                 {...form.register("description")}
               />
 

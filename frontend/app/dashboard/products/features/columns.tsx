@@ -12,29 +12,34 @@ import { EllipsisVerticalIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ColumnFilter from "@/components/ColumnFilter";
 
-export type Products = {
+export type Product = {
   id: number;
   documentId: string;
   name: string;
+  price: number;
+  stock : number ;
+  barcode: string;
   description: string | null;
 };
 
-export type CategoryFilters = {
+export type ProductsFilters = {
   name?: string;
+  price?:number;
+  stock?:number;
   description?: string;
 };
 
 export type HandleFilterChange = (
-  key: keyof CategoryFilters,
+  key: keyof ProductsFilters,
   value: string,
 ) => void;
 
 export const columns = (
-  filters: CategoryFilters,
+  filters: ProductsFilters,
   handleFilterChange: HandleFilterChange,
-  onEdit: (category: Category) => void,
+  onEdit: (product: Product) => void,
   onDelete: (documentId: string) => void,
-): ColumnDef<Category>[] => [
+): ColumnDef<Product>[] => [
   {
     accessorKey: "id",
     header: "ID",

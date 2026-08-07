@@ -5,8 +5,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { DataTable } from "./features/data-table";
 import {
   columns,
-  type Category,
-  type CategoryFilters,
+  type Product,
+  type ProductsFilters,
 } from "./features/columns";
 
 import {
@@ -39,29 +39,29 @@ type Pagination = {
 };
 
 type CategoriesResponse = {
-  data: Category[];
+  data: Product[];
   meta: { pagination: Pagination };
 };
 
 type LoadedPage = {
   key: string;
-  rows: Category[];
+  rows: Product[];
   meta: Pagination | null;
 };
 
-const queryKey = (page: number, pageSize: number, filters: CategoryFilters) =>
+const queryKey = (page: number, pageSize: number, filters: ProductsFilters) =>
   `${page}|${pageSize}|${filters.name ?? ""}`;
 
 const Page = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [loaded, setLoaded] = useState<LoadedPage | null>(null);
-  const [filters, setFilters] = useState<CategoryFilters>({});
+  const [filters, setFilters] = useState<ProductsFilters>({});
   const [sheetOpen, setSheetOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
   const handleFilterChange = useCallback(
-    (key: keyof CategoryFilters, value: string) => {
+    (key: keyof ProductsFilters, value: string) => {
       setFilters((prev) => ({ ...prev, [key]: value }));
       setPage(1);
     },
