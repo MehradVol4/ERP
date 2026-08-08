@@ -58,7 +58,7 @@ const Page = () => {
   const [loaded, setLoaded] = useState<LoadedPage | null>(null);
   const [filters, setFilters] = useState<ProductsFilters>({});
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState<Product | null>(null);
 
   const handleFilterChange = useCallback(
     (key: keyof ProductsFilters, value: string) => {
@@ -67,9 +67,8 @@ const Page = () => {
     },
     [],
   );
-  const fetchData = () => {
-    //@ts-expect-error
-    setLoaded(true);
+  const fetchData = useCallback(() => {
+    setLoaded(null);
     let active = true;
     const key = queryKey(page, pageSize, filters);
 
@@ -83,12 +82,13 @@ const Page = () => {
         if (!active) return;
         const rows = response.data.data.map((item) => ({
           id: item.id,
+          documentId: item.documentId,
           name: item.name,
           description: item.description,
           price: item.price,
-          stock : item.stock,
+          stock: item.stock,
+          barcode: item.barcode,
         }));
-        //@ts-expect-error
         setLoaded({ key, rows, meta: response.data.meta.pagination });
       })
       .catch((error) => {
@@ -101,18 +101,21 @@ const Page = () => {
     return () => {
       active = false;
     };
-  };
+  }, [page, pageSize, filters]);
 
-  const handleDelete = useCallback(async (documentId: string) => {
-    try {
-      await axiosInstance.delete(`/api/products/${documentId}`);
-      toast.success("products deleted!");
-      fetchData();
-    } catch (error) {
-      toast.error("Failed to delete category");
-      console.error(error);
-    }
-  }, []);
+  const handleDelete = useCallback(
+    async (documentId: string) => {
+      try {
+        await axiosInstance.delete(`/api/products/${documentId}`);
+        toast.success("Product deleted!");
+        fetchData();
+      } catch (error) {
+        toast.error("Failed to delete product");
+        console.error(error);
+      }
+    },
+    [fetchData],
+  );
   const tableColumns = useMemo(
     () =>
       columns(
@@ -125,25 +128,21 @@ const Page = () => {
         handleDelete,
       ),
     [filters, handleFilterChange,handleDelete],
-  );
+  );  
 
   const loading = loaded?.key !== queryKey(page, pageSize, filters);
   const products = loaded?.rows ?? [];
   const meta = loaded?.meta ?? null;
 
-  useEffect(
-    function () {
-      fetchData();
-    },
-    [page, pageSize, filters],
-  );
+  useEffect(() => {
+    return fetchData();
+  }, [fetchData]);
 
   const handlePageSize = (value: string | null) => {
     if (value === null) return;
     setPageSize(Number(value));
     setPage(1);
   };
-  //@ts-ignore
 
   const pageCount = meta?.pageCount ?? 1;
   const canGoPrevious = page > 1 && !loading;
