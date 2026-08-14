@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/sidebar";
 import { CirclePlusIcon } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function NavMain({
   items,
@@ -20,6 +21,7 @@ export function NavMain({
     icon?: React.ReactNode;
   }[];
 }) {
+  const pathname = usePathname();
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
@@ -46,7 +48,10 @@ export function NavMain({
           {items.map((item) => (
             <Link href={item.url} key={item.title}>
               <SidebarMenuItem>
-                <SidebarMenuButton tooltip={item.title}>
+                <SidebarMenuButton
+                  tooltip={item.title}
+                  isActive={pathname === item.url}
+                >
                   {item.icon}
                   <span>{item.title}</span>
                 </SidebarMenuButton>
