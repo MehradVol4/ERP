@@ -29,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import axiosInstance from "@/lib/axios";
 import { Sheet } from "@/components/ui/sheet";
+import { useRouter } from "next/navigation";
 
 type Pagination = {
   page: number;
@@ -58,6 +59,7 @@ const Page = () => {
   const [filters, setFilters] = useState<SalesFilters>({});
   const [sheetOpen, setSheetOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Sales | null>(null);
+  const router = useRouter() ;
 
   const handleFilterChange = useCallback(
     (key: keyof SalesFilters, value: string) => {
@@ -160,12 +162,11 @@ const Page = () => {
           </CardDescription>
           <CardAction>
             <Button
-              onClick={() => {
-                setSheetOpen(true);
-                setSelectedItem(null);
-              }}
+              onClick={() => 
+                router.push("/dashboard/sales/new")
+              }
             >
-              Add new record
+              Add new invoice
             </Button>
           </CardAction>
         </CardHeader>
