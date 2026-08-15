@@ -28,8 +28,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import axiosInstance from "@/lib/axios";
-import { Sheet } from "@/components/ui/sheet";
 import { useRouter } from "next/navigation";
+import SalesView from "./features/sales-view";
 
 type Pagination = {
   page: number;
@@ -57,9 +57,9 @@ const Page = () => {
   const [pageSize, setPageSize] = useState(5);
   const [loaded, setLoaded] = useState<LoadedPage | null>(null);
   const [filters, setFilters] = useState<SalesFilters>({});
-  const [sheetOpen, setSheetOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<Sales | null>(null);
-  const router = useRouter() ;
+  const [viewDocumentId, setViewDocumentId] = useState<string | null>(null);
+  const [viewOpen, setViewOpen] = useState(false);
+  const router = useRouter();
 
   const handleFilterChange = useCallback(
     (key: keyof SalesFilters, value: string) => {
@@ -122,13 +122,15 @@ const Page = () => {
       columns(
         filters,
         handleFilterChange,
-        (item) => {
-          setSelectedItem(item);
-          setSheetOpen(true);
-        },
+        (item) => router.push(`/dashboard/sales/${item.documentId}/edit`),
         handleDelete,
+        (item) => router.push(`/dashboard/sales/${item.documentId}/print`),
+        (item) => {
+          setViewDocumentId(item.documentId);
+          setViewOpen(true);
+        },
       ),
-    [filters, handleFilterChange,handleDelete],
+    [filters, handleFilterChange, handleDelete, router],
   );
 
   const loading = loaded?.key !== queryKey(page, pageSize, filters);
@@ -227,6 +229,12 @@ const Page = () => {
           </div>
         </CardContent>
       </Card>
+
+      <SalesView
+        documentId={viewDocumentId}
+        open={viewOpen}
+        onOpenChange={setViewOpen}
+      />
     </div>
   );
 };

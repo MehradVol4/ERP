@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { EllipsisVerticalIcon } from "lucide-react";
+import { EllipsisVerticalIcon, EyeIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ColumnFilter from "@/components/ColumnFilter";
 
@@ -34,8 +34,10 @@ export type HandleFilterChange = (
 export const columns = (
   filters: SalesFilters,
   handleFilterChange: HandleFilterChange,
-  onEdit: (Sales: Sales) => void,
+  onEdit: (sale: Sales) => void,
   onDelete: (documentId: string) => void,
+  onPrint: (sale: Sales) => void,
+  onView: (sale: Sales) => void,
 ): ColumnDef<Sales>[] => [
   {
     accessorKey: "id",
@@ -83,6 +85,17 @@ export const columns = (
   {
     id: "actions",
     cell: ({ row }) => (
+      <div className="flex items-center justify-end gap-1">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="flex size-8 text-muted-foreground"
+        aria-label="View details"
+        onClick={() => onView(row.original)}
+      >
+        <EyeIcon />
+        <span className="sr-only">View details</span>
+      </Button>
       <DropdownMenu>
         <DropdownMenuTrigger
           render={
@@ -100,8 +113,9 @@ export const columns = (
           <DropdownMenuItem onClick={() => onEdit(row.original)}>
             Edit
           </DropdownMenuItem>
-          <DropdownMenuItem>Make a copy</DropdownMenuItem>
-          <DropdownMenuItem>Favorite</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onPrint(row.original)}>
+            Print
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             variant="destructive"
@@ -113,6 +127,7 @@ export const columns = (
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      </div>
     ),
   },
 ];
