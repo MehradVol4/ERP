@@ -22,7 +22,7 @@ export type Sales = {
 
 export type SalesFilters = {
   date?: string;
-  total?: number;
+  total?: string;
   customer_name?: string;
 };
 
@@ -73,11 +73,12 @@ export const columns = (
       <ColumnFilter
         columnLabel="Total"
         placeholder="Filter total"
-        //@ts-ignore
         columnValue={filters.total || ""}
         onChange={(val) => handleFilterChange("total", val)}
       />
     ),
+
+    cell: (info) => info.getValue(),
   },
   {
     id: "actions",
