@@ -49,7 +49,7 @@ type LoadedPage = {
 };
 
 const queryKey = (page: number, pageSize: number, filters: SalesFilters) =>
-  `${page}|${pageSize}|${filters.name ?? ""}`;
+  `${page}|${pageSize}|${filters.customer_name ?? ""}|${filters.date ?? ""}|${filters.total ?? ""}`;
 
 const Page = () => {
   const [page, setPage] = useState(1);
@@ -57,7 +57,7 @@ const Page = () => {
   const [loaded, setLoaded] = useState<LoadedPage | null>(null);
   const [filters, setFilters] = useState<SalesFilters>({});
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState<Sales | null>(null);
 
   const handleFilterChange = useCallback(
     (key: keyof SalesFilters, value: string) => {
@@ -67,14 +67,18 @@ const Page = () => {
     [],
   );
   const fetchData = () => {
-    //@ts-expect-error
-    setLoaded(true);
     let active = true;
     const key = queryKey(page, pageSize, filters);
 
     let query = `/api/sales?pagination[page]=${page}&pagination[pageSize]=${pageSize}`;
-    if (filters.name) {
-      query += `&filters[name][$containsi]=${encodeURIComponent(filters.name)}`;
+    if (filters.customer_name) {
+      query += `&filters[customer_name][$containsi]=${encodeURIComponent(filters.customer_name)}`;
+    }
+    if (filters.date) {
+      query += `&filters[date][$containsi]=${encodeURIComponent(filters.date)}`;
+    }
+    if (filters.total) {
+      query += `&filters[total][$containsi]=${encodeURIComponent(String(filters.total))}`;
     }
     axiosInstance
       .get<SalesResponse>(query)
@@ -82,9 +86,10 @@ const Page = () => {
         if (!active) return;
         const rows = response.data.data.map((item) => ({
           id: item.id,
-          name: item.name,
-          description: item.description,
           documentId: item.documentId,
+          date: item.date,
+          total: item.total,
+          customer_name: item.customer_name,
         }));
         setLoaded({ key, rows, meta: response.data.meta.pagination });
       })
@@ -130,7 +135,7 @@ const Page = () => {
 
   useEffect(
     function () {
-      fetchData();
+      return fetchData();
     },
     [page, pageSize, filters],
   );
@@ -140,7 +145,6 @@ const Page = () => {
     setPageSize(Number(value));
     setPage(1);
   };
-  //@ts-ignore
 
   const pageCount = meta?.pageCount ?? 1;
   const canGoPrevious = page > 1 && !loading;
@@ -163,8 +167,6 @@ const Page = () => {
             >
               Add new record
             </Button>
-            <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-            </Sheet>
           </CardAction>
         </CardHeader>
 

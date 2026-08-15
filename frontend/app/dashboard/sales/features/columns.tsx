@@ -17,13 +17,13 @@ export type Sales = {
   documentId: string;
   date: string;
   total: number;
-  costumer_name: string;
+  customer_name: string;
 };
 
 export type SalesFilters = {
   date?: string;
   total?: number;
-  costumer_name?: string;
+  customer_name?: string;
 };
 
 export type HandleFilterChange = (
@@ -42,13 +42,13 @@ export const columns = (
     header: "ID",
   },
   {
-    accessorKey: "costumer_name",
+    accessorKey: "customer_name",
     header: () => (
       <ColumnFilter
-        columnLabel="Costumer name"
+        columnLabel="Customer name"
         placeholder="Filter name...."
-        columnValue={filters.costumer_name || ""}
-        onChange={(val) => handleFilterChange("costumer_name", val)}
+        columnValue={filters.customer_name || ""}
+        onChange={(val) => handleFilterChange("customer_name", val)}
       />
     ),
 
