@@ -3,9 +3,9 @@ import SalesReport from "../features/sales-report";
 const Page = () => {
   return (
     <SalesReport
-      title="Todays Sales"
-      description="List of Todays Sales"
-      period="day"
+      title="Weekly Sales"
+      description="List of This Week's Sales"
+      period="week"
     />
   );
 };
