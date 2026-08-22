@@ -8,6 +8,7 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
+import { Spinner } from "@/components/ui/spinner";
 import axiosInstance from "@/lib/axios";
 
 type SaleItemResponse = {
@@ -86,7 +87,10 @@ function SalesView({ documentId, open, onOpenChange }: SalesViewProps) {
 
         <div className="px-6 pb-6">
           {status === "loading" && (
-            <p className="text-sm text-muted-foreground">Loading...</p>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Spinner />
+              <span>Loading...</span>
+            </div>
           )}
           {status === "error" && (
             <p className="text-sm text-destructive">Failed to load invoice.</p>

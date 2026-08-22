@@ -20,6 +20,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { Spinner } from "@/components/ui/spinner"
 
 export function LoginForm({
   className,
@@ -92,6 +93,7 @@ export function LoginForm({
               </Field>
               <Field>
                 <Button type="submit" disabled={loading}>
+                  {loading && <Spinner />}
                   {loading ? "Signing in..." : "Login"}
                 </Button>
                 <FieldDescription className="text-center">

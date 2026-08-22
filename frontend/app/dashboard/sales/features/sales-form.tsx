@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PlusIcon, Trash2Icon } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 import axiosInstance from "@/lib/axios";
 import type { Product } from "../../products/features/columns";
 
@@ -318,6 +319,7 @@ function SalesForm({ sale = null }: SalesFormProps) {
 
             <div className="flex items-center gap-2">
               <Button type="submit" disabled={loading}>
+                {loading && <Spinner />}
                 {loading
                   ? "Saving..."
                   : isEdit

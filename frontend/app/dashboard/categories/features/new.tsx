@@ -15,6 +15,7 @@ import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Spinner } from "@/components/ui/spinner";
 import axiosInstance from "@/lib/axios";
 
 const formSchema = z.object({
@@ -99,6 +100,7 @@ function New({ item = null, onSuccess, isOpen }) {
               </FieldError>
             </Field>
             <Button type="submit" disabled={loading}>
+              {loading && <Spinner />}
               {loading ? "Saving" : "Save changes"}
             </Button>
           </form>

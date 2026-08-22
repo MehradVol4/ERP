@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import axiosInstance from "@/lib/axios";
+import { Spinner } from "@/components/ui/spinner";
 import SalesForm, { type SaleFormValues } from "../../features/sales-form";
 
 type SaleItemResponse = {
@@ -61,8 +62,9 @@ const Page = () => {
 
   if (status === "loading") {
     return (
-      <div className="py-4 md:py-6 px-4 lg:px-6">
-        <p className="text-muted-foreground">Loading invoice...</p>
+      <div className="flex items-center gap-2 py-4 md:py-6 px-4 lg:px-6 text-muted-foreground">
+        <Spinner />
+        <span>Loading invoice...</span>
       </div>
     );
   }

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axiosInstance from "@/lib/axios";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { PrinterIcon } from "lucide-react";
 
 type SaleItemResponse = {
@@ -63,8 +64,9 @@ const Page = () => {
 
   if (status === "loading") {
     return (
-      <div className="p-6">
-        <p className="text-muted-foreground">Loading invoice...</p>
+      <div className="flex items-center gap-2 p-6 text-muted-foreground">
+        <Spinner />
+        <span>Loading invoice...</span>
       </div>
     );
   }

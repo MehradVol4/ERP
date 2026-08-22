@@ -29,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import axiosInstance from "@/lib/axios";
 import { useRouter } from "next/navigation";
+import { Spinner } from "@/components/ui/spinner";
 import SalesView from "./features/sales-view";
 
 type Pagination = {
@@ -175,7 +176,10 @@ const Page = () => {
 
         <CardContent>
           {loading ? (
-            <p className="text-muted-foreground">Loading...</p>
+            <div className="flex items-center justify-center gap-2 py-10 text-muted-foreground">
+              <Spinner />
+              <span>Loading...</span>
+            </div>
           ) : (
             <DataTable columns={tableColumns} data={sales} />
           )}
