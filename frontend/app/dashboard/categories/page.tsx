@@ -2,7 +2,7 @@
 
 import { toast } from "sonner";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { DataTable } from "./features/data-table";
+import { DataTable } from "../../../components/data-table";
 import {
   columns,
   type Category,
@@ -122,7 +122,7 @@ const Page = () => {
         },
         handleDelete,
       ),
-    [filters, handleFilterChange,handleDelete],
+    [filters, handleFilterChange, handleDelete],
   );
 
   const loading = loaded?.key !== queryKey(page, pageSize, filters);
