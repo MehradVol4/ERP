@@ -38,10 +38,16 @@ const handler = NextAuth({
         }),
     ],
     callbacks: {
-        async jwt({ token, user }) {
+        async jwt({ token, user, trigger, session }) {
             if (user) {
                 token.jwt = user.jwt;
                 token.id = user.id;
+            }
+            // Allow the client to push updated profile fields into the session
+            // (via useSession().update({ name, email })) after editing them.
+            if (trigger === "update" && session) {
+                if (session.name) token.name = session.name;
+                if (session.email) token.email = session.email;
             }
             return token;
         },
