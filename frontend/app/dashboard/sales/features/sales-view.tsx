@@ -14,6 +14,7 @@ import axiosInstance from "@/lib/axios";
 type SaleItemResponse = {
   quantity: number | null;
   price: number | null;
+  cost: number | null;
   product: { id: number; name: string | null } | null;
 };
 
@@ -72,6 +73,13 @@ function SalesView({ documentId, open, onOpenChange }: SalesViewProps) {
   }, [open, documentId]);
 
   const items = sale?.products ?? [];
+  const profit = items.reduce(
+    (sum, item) =>
+      sum +
+      ((Number(item.price) || 0) - (Number(item.cost) || 0)) *
+        (Number(item.quantity) || 0),
+    0,
+  );
   const formatDate = (value: string | null | undefined) =>
     value ? new Date(value).toLocaleString() : "-";
 
@@ -107,6 +115,7 @@ function SalesView({ documentId, open, onOpenChange }: SalesViewProps) {
                   label="Total"
                   value={Number(sale.total ?? 0).toFixed(2)}
                 />
+                <Row label="Profit" value={profit.toFixed(2)} />
                 {sale.createdAt && (
                   <Row label="Created" value={formatDate(sale.createdAt)} />
                 )}

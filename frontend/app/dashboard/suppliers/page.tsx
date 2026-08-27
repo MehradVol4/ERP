@@ -2,11 +2,11 @@
 
 import { toast } from "sonner";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { DataTable } from "./features/data-table";
+import { DataTable } from "../../../components/data-table";
 import {
   columns,
-  type Product,
-  type ProductsFilters,
+  type Supplier,
+  type SupplierFilters,
 } from "./features/columns";
 
 import {
@@ -29,7 +29,6 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import axiosInstance from "@/lib/axios";
 import { Sheet } from "@/components/ui/sheet";
-import { Spinner } from "@/components/ui/spinner";
 import New from "./features/new";
 
 type Pagination = {
@@ -39,66 +38,67 @@ type Pagination = {
   total: number;
 };
 
-type ProductsResponse = {
-  data: Product[];
+type SuppliersResponse = {
+  data: Supplier[];
   meta: { pagination: Pagination };
 };
 
 type LoadedPage = {
   key: string;
-  rows: Product[];
+  rows: Supplier[];
   meta: Pagination | null;
 };
 
-const queryKey = (page: number, pageSize: number, filters: ProductsFilters) =>
-  `${page}|${pageSize}|${filters.name ?? ""}`;
+const queryKey = (page: number, pageSize: number, filters: SupplierFilters) =>
+  `${page}|${pageSize}|${filters.name ?? ""}|${filters.contact_person ?? ""}`;
 
 const Page = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [loaded, setLoaded] = useState<LoadedPage | null>(null);
-  const [filters, setFilters] = useState<ProductsFilters>({});
+  const [filters, setFilters] = useState<SupplierFilters>({});
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<Product | null>(null);
+  const [selectedItem, setSelectedItem] = useState<Supplier | null>(null);
 
   const handleFilterChange = useCallback(
-    (key: keyof ProductsFilters, value: string) => {
+    (key: keyof SupplierFilters, value: string) => {
       setFilters((prev) => ({ ...prev, [key]: value }));
       setPage(1);
     },
     [],
   );
+
   const fetchData = useCallback(() => {
     setLoaded(null);
     let active = true;
     const key = queryKey(page, pageSize, filters);
 
-    let query = `/api/products?pagination[page]=${page}&pagination[pageSize]=${pageSize}&populate=supplier`;
+    let query = `/api/suppliers?pagination[page]=${page}&pagination[pageSize]=${pageSize}&sort=name:asc`;
     if (filters.name) {
       query += `&filters[name][$containsi]=${encodeURIComponent(filters.name)}`;
     }
+    if (filters.contact_person) {
+      query += `&filters[contact_person][$containsi]=${encodeURIComponent(filters.contact_person)}`;
+    }
     axiosInstance
-      .get<ProductsResponse>(query)
+      .get<SuppliersResponse>(query)
       .then((response) => {
         if (!active) return;
         const rows = response.data.data.map((item) => ({
           id: item.id,
           documentId: item.documentId,
           name: item.name,
-          description: item.description,
-          price: item.price,
-          cost_price: item.cost_price,
-          stock: item.stock,
-          reorder_level: item.reorder_level,
-          barcode: item.barcode,
-          supplier: item.supplier ?? null,
+          contact_person: item.contact_person,
+          phone: item.phone,
+          email: item.email,
+          address: item.address,
+          notes: item.notes,
         }));
         setLoaded({ key, rows, meta: response.data.meta.pagination });
       })
       .catch((error) => {
         if (!active) return;
-
-        console.error("Failed to fetch products:", error);
+        console.error("Failed to fetch suppliers:", error);
         setLoaded({ key, rows: [], meta: null });
       });
 
@@ -110,16 +110,17 @@ const Page = () => {
   const handleDelete = useCallback(
     async (documentId: string) => {
       try {
-        await axiosInstance.delete(`/api/products/${documentId}`);
-        toast.success("Product deleted!");
+        await axiosInstance.delete(`/api/suppliers/${documentId}`);
+        toast.success("Supplier deleted!");
         fetchData();
       } catch (error) {
-        toast.error("Failed to delete product");
+        toast.error("Failed to delete supplier");
         console.error(error);
       }
     },
     [fetchData],
   );
+
   const tableColumns = useMemo(
     () =>
       columns(
@@ -131,11 +132,11 @@ const Page = () => {
         },
         handleDelete,
       ),
-    [filters, handleFilterChange,handleDelete],
-  );  
+    [filters, handleFilterChange, handleDelete],
+  );
 
   const loading = loaded?.key !== queryKey(page, pageSize, filters);
-  const products = loaded?.rows ?? [];
+  const suppliers = loaded?.rows ?? [];
   const meta = loaded?.meta ?? null;
 
   useEffect(() => {
@@ -156,9 +157,9 @@ const Page = () => {
     <div className="py-4 md:py-6 px-4 lg:px-6">
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Products</CardTitle>
+          <CardTitle>Suppliers</CardTitle>
           <CardDescription>
-            <span>List of Products</span>
+            <span>List of suppliers</span>
           </CardDescription>
           <CardAction>
             <Button
@@ -185,11 +186,10 @@ const Page = () => {
         <CardContent>
           {loading ? (
             <div className="flex items-center justify-center gap-2 py-10 text-muted-foreground">
-              <Spinner />
               <span>Loading...</span>
             </div>
           ) : (
-            <DataTable columns={tableColumns} data={products} />
+            <DataTable columns={tableColumns} data={suppliers} />
           )}
 
           <div className="flex flex-col gap-4 mt-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
@@ -211,7 +211,7 @@ const Page = () => {
               <span>
                 {meta.total === 0
                   ? "No Rows"
-                  : `Showing ${(meta.page - 1) * meta.pageSize + 1} to ${(meta.page - 1) * meta.pageSize + products.length} of ${meta.total} rows`}
+                  : `Showing ${(meta.page - 1) * meta.pageSize + 1} to ${(meta.page - 1) * meta.pageSize + suppliers.length} of ${meta.total} rows`}
               </span>
             )}
 

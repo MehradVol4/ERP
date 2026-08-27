@@ -93,7 +93,7 @@ export function SectionCards() {
   if (!stats) {
     return (
       <div className={gridClass}>
-        {Array.from({ length: 4 }).map((_, i) => (
+        {Array.from({ length: 5 }).map((_, i) => (
           <Card key={i} className="@container/card">
             <CardHeader>
               <CardDescription>
@@ -146,6 +146,38 @@ export function SectionCards() {
           </div>
           <div className="text-muted-foreground">
             {formatCurrency(stats.revenueThisMonth, prefs.currency)} this month
+          </div>
+        </CardFooter>
+      </Card>
+
+      {/* Total Profit */}
+      <Card className="@container/card">
+        <CardHeader>
+          <CardDescription>Total Profit</CardDescription>
+          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+            {formatCurrency(stats.totalProfit, prefs.currency)}
+          </CardTitle>
+          <CardAction>
+            <TrendBadge pct={stats.profitTrendPct} />
+          </CardAction>
+        </CardHeader>
+        <CardFooter className="flex-col items-start gap-1.5 text-sm">
+          <div className="line-clamp-1 flex gap-2 font-medium">
+            {trendText(
+              stats.profitTrendPct,
+              "Margins up this month",
+              "Margins down this month",
+              "No profit yet this month",
+            )}{" "}
+            {stats.profitTrendPct !== null &&
+              (stats.profitTrendPct >= 0 ? (
+                <TrendingUpIcon className="size-4" />
+              ) : (
+                <TrendingDownIcon className="size-4" />
+              ))}
+          </div>
+          <div className="text-muted-foreground">
+            {formatCurrency(stats.profitThisMonth, prefs.currency)} this month
           </div>
         </CardFooter>
       </Card>

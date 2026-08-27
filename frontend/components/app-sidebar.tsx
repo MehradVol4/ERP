@@ -6,6 +6,8 @@ import {
   IconHexagonNumber1,
   IconReportMoney,
   IconSettings,
+  IconTruck,
+  IconShoppingCartPlus,
 } from "@tabler/icons-react";
 import { NavDocuments } from "@/components/nav-documents";
 import { NavMain } from "@/components/nav-main";
@@ -52,6 +54,16 @@ const data = {
       title: "Products",
       url: "/dashboard/products",
       icon: <IconBasket stroke={2} />,
+    },
+    {
+      title: "Suppliers",
+      url: "/dashboard/suppliers",
+      icon: <IconTruck stroke={2} />,
+    },
+    {
+      title: "Purchases",
+      url: "/dashboard/purchases",
+      icon: <IconShoppingCartPlus stroke={2} />,
     },
     {
       title: "Sales",
