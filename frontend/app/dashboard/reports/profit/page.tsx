@@ -42,7 +42,7 @@ const SORT_OPTIONS: { value: SortKey; label: string }[] = [
 const formatPct = (value: number | null) =>
   value === null ? "—" : `${(value * 100).toFixed(1)}%`;
 
-/** A compact horizontal-bar leaderboard for a single metric. */
+// Horizontal-bar leaderboard for one metric.
 function Leaderboard({
   title,
   icon,

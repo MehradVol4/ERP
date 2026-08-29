@@ -47,17 +47,14 @@ const RANGE_DAYS: Record<string, number> = { "90d": 90, "30d": 30, "7d": 7 }
 
 type DailyPoint = { date: string; revenue: number; orders: number }
 
-/** A local `YYYY-MM-DD` key so per-day bucketing matches the axis labels. */
+// Local YYYY-MM-DD key so per-day bucketing matches the axis labels.
 function dayKey(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
     d.getDate(),
   ).padStart(2, "0")}`
 }
 
-/**
- * Build one point per day from `startDate` through today, filling days with no
- * sales as zero so the area spans the whole selected range.
- */
+// One point per day over the range, zero-filling days with no sales.
 function buildSeries(sales: SalePoint[], days: number): DailyPoint[] {
   const revenueByDay = new Map<string, number>()
   const ordersByDay = new Map<string, number>()

@@ -2,11 +2,8 @@
 
 import { useEffect, useState } from "react"
 
-/**
- * App-level display preferences. These are UI/formatting choices with no
- * backend field to store them, so they live in localStorage (per browser)
- * and are read by the dashboard cards and chart.
- */
+// Display preferences with no backend field; kept in localStorage and read by
+// the dashboard cards and chart.
 export type CurrencyCode = "USD" | "EUR" | "IRR" | "IRT"
 
 export type Preferences = {
@@ -29,7 +26,7 @@ export const CURRENCY_OPTIONS: { value: CurrencyCode; label: string }[] = [
 const STORAGE_KEY = "erp-preferences"
 const EVENT = "erp-preferences-changed"
 
-/** Format an amount using the chosen currency; Toman is not an ISO code. */
+// Format an amount in the chosen currency (Toman isn't an ISO code).
 export function formatCurrency(amount: number, currency: CurrencyCode): string {
   if (currency === "IRT") {
     return `${new Intl.NumberFormat("en-US", {
@@ -81,11 +78,8 @@ export function setPreferences(patch: Partial<Preferences>): Preferences {
   return next
 }
 
-/**
- * Subscribe to preferences. Starts from defaults on the server and first
- * client paint (avoids hydration mismatch), then syncs from storage and
- * updates live when preferences change in this or another tab.
- */
+// Reactive preferences. Starts from defaults on the server and first paint
+// (avoids hydration mismatch), then syncs from storage and across tabs.
 export function usePreferences(): Preferences {
   const [prefs, setPrefs] = useState<Preferences>(DEFAULT_PREFERENCES)
 

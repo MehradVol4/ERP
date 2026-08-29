@@ -1,17 +1,9 @@
 import axiosInstance from "@/lib/axios"
 
-/**
- * Per-product profit aggregation, built entirely from the real sales data.
- *
- * Each sale line carries `quantity`, `price` (what it sold for) and `cost` (the
- * product's cost snapshotted at the moment of sale by the stock-sync layer).
- * That lets us compute revenue, cost of goods sold and gross profit per product
- * without any historical guesswork. Sales created before cost snapshotting
- * existed may have a null cost — treated as 0, which only understates cost.
- *
- * There is no aggregation endpoint, so we page through the sales and reduce on
- * the client (same pattern as the dashboard summary).
- */
+// Per-product profit, built from the sale lines. Each line carries quantity,
+// price and the cost snapshotted at sale time, so profit is exact. Older sales
+// with no cost are treated as 0 (understates cost). Aggregated on the client
+// since there's no aggregation endpoint.
 
 export type DateRange = "all" | "30d" | "month" | "year"
 
@@ -26,12 +18,12 @@ export type ProductProfit = {
   productId: number
   name: string
   unitsSold: number
-  /** Distinct sales (invoices) this product appeared on. */
+  // Distinct invoices this product appeared on.
   orders: number
   revenue: number
   cost: number
   profit: number
-  /** Gross margin = profit / revenue; null when there was no revenue. */
+  // profit / revenue; null when there was no revenue.
   margin: number | null
 }
 
@@ -68,7 +60,7 @@ type StrapiList<T> = {
 
 const PAGE_SIZE = 100
 
-/** Inclusive lower bound (UTC) for a range; null means "no lower bound". */
+// Lower bound for a range; null means no bound (all time).
 function rangeStart(range: DateRange, now = new Date()): Date | null {
   switch (range) {
     case "30d":

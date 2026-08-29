@@ -1,11 +1,7 @@
 import axiosInstance from "@/lib/axios"
 
-/**
- * Aggregated metrics for the dashboard summary cards. Everything here is
- * derived from the real Strapi collections (sales, products, categories);
- * there is no aggregation endpoint, so we page through the records and
- * compute the numbers on the client.
- */
+// Dashboard summary metrics. There's no aggregation endpoint, so we page
+// through sales/products/categories and compute the numbers on the client.
 export type DashboardStats = {
   // Revenue
   totalRevenue: number
@@ -29,7 +25,7 @@ export type DashboardStats = {
   categoriesCount: number
 }
 
-/** Products at or below this stock level are flagged as "low stock". */
+// Products at or below this stock level count as low stock.
 export const LOW_STOCK_THRESHOLD = 10
 
 type SaleItemRow = {
@@ -50,7 +46,7 @@ type ProductRow = {
   reorder_level: number | null
 }
 
-/** Gross profit for one sale: Σ (sellPrice − cost) × quantity over its lines. */
+// Gross profit for one sale across its line items.
 function saleProfit(sale: SaleRow): number {
   const items = sale.products ?? []
   let profit = 0
@@ -70,13 +66,13 @@ type StrapiList<T> = {
 
 const PAGE_SIZE = 100
 
-/** Percentage change from `prev` to `cur`; null when there's no basis to compare. */
+// Percent change from prev to cur; null when there's no basis to compare.
 function trendPct(cur: number, prev: number): number | null {
   if (prev === 0) return cur > 0 ? 100 : null
   return ((cur - prev) / prev) * 100
 }
 
-/** A comparable "YYYY-M" key in UTC so month bucketing is timezone-stable. */
+// UTC "YYYY-M" key so month bucketing is timezone-stable.
 function monthKey(d: Date): string {
   return `${d.getUTCFullYear()}-${d.getUTCMonth()}`
 }
@@ -98,7 +94,7 @@ async function fetchAllPages<T>(path: string, extraQuery = ""): Promise<T[]> {
   return rows
 }
 
-/** All sales as `{ date, total }`, for building a revenue timeline. */
+// A point on the revenue timeline.
 export type SalePoint = { date: string; total: number }
 
 export async function fetchSalesTimeline(): Promise<SalePoint[]> {
@@ -187,8 +183,7 @@ export async function fetchDashboardStats(
   }
 
   // --- Inventory ---
-  // Prefer each product's own reorder level; fall back to the global
-  // threshold when a product hasn't set one.
+  // Each product's own reorder level, falling back to the global threshold.
   const lowStockCount = products.filter((p) => {
     const level = p.reorder_level ?? lowStockThreshold
     return (p.stock ?? 0) <= level

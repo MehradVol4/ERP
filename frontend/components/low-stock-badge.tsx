@@ -5,11 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { usePreferences } from "@/lib/preferences";
 import { fetchLowStockProducts } from "@/lib/low-stock";
 
-/**
- * Live count of products that need restocking, shown next to the "Low Stock"
- * sidebar item so the warning is visible from anywhere in the app. Renders
- * nothing when inventory is healthy.
- */
+// Live count of products needing restock, shown on the Low Stock sidebar item.
+// Renders nothing when inventory is healthy.
 export function LowStockBadge() {
   const prefs = usePreferences();
   const [count, setCount] = useState(0);
@@ -21,7 +18,7 @@ export function LowStockBadge() {
         if (active) setCount(rows.length);
       })
       .catch(() => {
-        /* keep the sidebar quiet if the request fails */
+        // stay quiet if it fails
       });
     return () => {
       active = false;

@@ -1,13 +1,8 @@
 import axiosInstance from "@/lib/axios"
 
-/**
- * Low-stock helpers. A product counts as "low" when its stock is at or below
- * its own reorder level (falling back to a global threshold when it has none).
- *
- * Strapi can't filter one column against another (stock <= reorder_level), so
- * we page through the products and decide on the client — the same approach the
- * dashboard summary uses.
- */
+// A product is low when its stock is at or below its reorder level (or the
+// global threshold when it has none). Strapi can't compare two columns, so we
+// page through the products and filter on the client.
 
 export const DEFAULT_LOW_STOCK_THRESHOLD = 10
 
@@ -21,9 +16,8 @@ export type LowStockProduct = {
   reorderLevel: number
   costPrice: number
   supplier: LowStockSupplier
-  /** How many units below the reorder level (0 when exactly at it). */
+  // Units below the reorder level (0 when exactly at it).
   shortfall: number
-  /** Suggested reorder quantity — restock back up to twice the reorder level. */
   suggestedQty: number
 }
 
@@ -44,7 +38,7 @@ type StrapiList<T> = {
 
 const PAGE_SIZE = 100
 
-/** Restock target: bring the product back up to 2× its reorder level. */
+// Restock target: back up to twice the reorder level.
 function suggestQty(stock: number, reorderLevel: number): number {
   return Math.max(reorderLevel * 2 - stock, 1)
 }
@@ -85,12 +79,12 @@ export async function fetchLowStockProducts(
     })
   }
 
-  // Most urgent first (largest shortfall, then lowest stock).
+  // Most urgent first.
   low.sort((a, b) => b.shortfall - a.shortfall || a.stock - b.stock)
   return low
 }
 
-/** Build the reorder link that pre-fills the purchase form for one product. */
+// Reorder link that pre-fills the purchase form for one product.
 export function reorderHref(product: LowStockProduct): string {
   const params = new URLSearchParams({
     product: String(product.id),

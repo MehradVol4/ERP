@@ -62,9 +62,8 @@ function PurchaseForm() {
   const [products, setProducts] = useState<Product[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
 
-  // A one-click "Reorder" from the Low Stock page arrives here with the
-  // product, a suggested quantity, its last cost and (optionally) the supplier
-  // pre-filled via the query string.
+  // A "Reorder" from the Low Stock page lands here with the product, quantity,
+  // cost and supplier pre-filled in the query string.
   const prefillProduct = Number(searchParams.get("product")) || 0;
   const prefillSupplier = searchParams.get("supplier") ?? "";
   const prefillItem = prefillProduct

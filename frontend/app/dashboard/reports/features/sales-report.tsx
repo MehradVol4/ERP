@@ -45,19 +45,12 @@ type LoadedPage = {
   meta: Pagination | null;
 };
 
-/** Report time window: today, this week, or this month. */
 export type ReportPeriod = "day" | "week" | "month";
 
-/**
- * First day of the week for the "week" period.
- * 0 = Sunday, 1 = Monday, ... 6 = Saturday. Saturday matches the Iranian week.
- */
+// Week starts on Saturday (Iranian week). 0 = Sunday ... 6 = Saturday.
 const WEEK_START_DAY = 6;
 
-/**
- * Half-open date range [from, to) that bounds the report to the current
- * day / week / month, expressed in the user's local time.
- */
+// Half-open [from, to) range for the current day/week/month in local time.
 const getRange = (period: ReportPeriod): { from: Date; to: Date } => {
   const from = new Date();
   from.setHours(0, 0, 0, 0);
@@ -85,7 +78,6 @@ const queryKey = (page: number, pageSize: number, filters: SalesFilters) =>
 type SalesReportProps = {
   title: string;
   description: string;
-  /** Restricts the listing to the current day, week, or month. */
   period: ReportPeriod;
 };
 
@@ -98,7 +90,6 @@ const SalesReport = ({ title, description, period }: SalesReportProps) => {
   const [viewOpen, setViewOpen] = useState(false);
   const router = useRouter();
 
-  // Computed once per mount so the window boundaries stay stable across renders.
   const range = useMemo(() => getRange(period), [period]);
 
   const handleFilterChange = useCallback(
@@ -113,7 +104,6 @@ const SalesReport = ({ title, description, period }: SalesReportProps) => {
     const key = queryKey(page, pageSize, filters);
 
     let query = `/api/sales?pagination[page]=${page}&pagination[pageSize]=${pageSize}`;
-    // Constrain results to the current period: [range.from, range.to).
     query += `&filters[date][$gte]=${encodeURIComponent(range.from.toISOString())}`;
     query += `&filters[date][$lt]=${encodeURIComponent(range.to.toISOString())}`;
     if (filters.customer_name) {

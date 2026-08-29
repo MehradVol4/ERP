@@ -32,7 +32,7 @@ export type HandleFilterChange = (
   value: string,
 ) => void;
 
-/** Colour each movement type so the ledger is scannable at a glance. */
+// Badge colour per movement type.
 const TYPE_VARIANT: Record<
   MovementType,
   "default" | "secondary" | "destructive" | "outline"
