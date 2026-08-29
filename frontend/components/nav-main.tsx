@@ -19,6 +19,7 @@ export function NavMain({
     title: string;
     url: string;
     icon?: React.ReactNode;
+    badge?: React.ReactNode;
   }[];
 }) {
   const pathname = usePathname();
@@ -54,6 +55,7 @@ export function NavMain({
                 >
                   {item.icon}
                   <span>{item.title}</span>
+                  {item.badge}
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </Link>

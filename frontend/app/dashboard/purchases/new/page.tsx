@@ -1,5 +1,10 @@
+import { Suspense } from "react";
 import PurchaseForm from "../features/purchase-form";
 
 export default function NewPurchasePage() {
-  return <PurchaseForm />;
+  return (
+    <Suspense>
+      <PurchaseForm />
+    </Suspense>
+  );
 }

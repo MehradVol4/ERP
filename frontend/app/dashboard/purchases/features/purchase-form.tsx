@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -57,17 +57,31 @@ const toDateTimeLocal = (value: string) => {
 
 function PurchaseForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+
+  // A one-click "Reorder" from the Low Stock page arrives here with the
+  // product, a suggested quantity, its last cost and (optionally) the supplier
+  // pre-filled via the query string.
+  const prefillProduct = Number(searchParams.get("product")) || 0;
+  const prefillSupplier = searchParams.get("supplier") ?? "";
+  const prefillItem = prefillProduct
+    ? {
+        product: prefillProduct,
+        quantity: Number(searchParams.get("qty")) || 1,
+        cost: Number(searchParams.get("cost")) || 0,
+      }
+    : { ...emptyItem };
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       reference: "",
       date: toDateTimeLocal(new Date().toISOString()),
-      supplier: "",
-      items: [{ ...emptyItem }],
+      supplier: prefillSupplier,
+      items: [prefillItem],
     },
   });
 

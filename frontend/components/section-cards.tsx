@@ -265,10 +265,13 @@ export function SectionCards() {
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
             {stats.lowStockCount > 0 ? (
-              <>
+              <Link
+                href="/dashboard/low-stock"
+                className="flex items-center gap-2 text-destructive underline-offset-4 hover:underline"
+              >
                 {number.format(stats.lowStockCount)} need restocking{" "}
-                <AlertTriangleIcon className="size-4 text-destructive" />
-              </>
+                <AlertTriangleIcon className="size-4" />
+              </Link>
             ) : (
               "Inventory looks healthy"
             )}

@@ -10,7 +10,9 @@ import {
   IconShoppingCartPlus,
   IconUsers,
   IconArrowsExchange,
+  IconAlertTriangle,
 } from "@tabler/icons-react";
+import { LowStockBadge } from "@/components/low-stock-badge";
 import { NavDocuments } from "@/components/nav-documents";
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
@@ -32,6 +34,7 @@ import {
   FileChartColumnIcon,
   FileIcon,
   CommandIcon,
+  TrendingUpIcon,
 } from "lucide-react";
 import { ModeToggle } from "@/app/dashboard/mode-toggle";
 
@@ -56,6 +59,12 @@ const data = {
       title: "Products",
       url: "/dashboard/products",
       icon: <IconBasket stroke={2} />,
+    },
+    {
+      title: "Low Stock",
+      url: "/dashboard/low-stock",
+      icon: <IconAlertTriangle stroke={2} />,
+      badge: <LowStockBadge />,
     },
     {
       title: "Suppliers",
@@ -153,6 +162,11 @@ const data = {
       name: "Monthly Sales",
       url: "/dashboard/reports/monthlysales",
       icon: <FileIcon />,
+    },
+    {
+      name: "Profit Report",
+      url: "/dashboard/reports/profit",
+      icon: <TrendingUpIcon />,
     },
   ],
 };
