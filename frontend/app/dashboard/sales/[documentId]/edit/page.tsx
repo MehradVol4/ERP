@@ -15,6 +15,7 @@ type SaleItemResponse = {
 type SaleResponse = {
   documentId: string;
   customer_name: string | null;
+  customer: { id: number } | null;
   date: string | null;
   products: SaleItemResponse[] | null;
 };
@@ -33,13 +34,14 @@ const Page = () => {
     setStatus("loading");
     axiosInstance
       .get<{ data: SaleResponse }>(
-        `/api/sales/${documentId}?populate[products][populate][product]=true`,
+        `/api/sales/${documentId}?populate[products][populate][product]=true&populate[customer][fields][0]=id`,
       )
       .then((response) => {
         if (!active) return;
         const data = response.data.data;
         setSale({
           documentId: data.documentId,
+          customer: data.customer?.id ?? null,
           customer_name: data.customer_name ?? "",
           date: data.date ?? new Date().toISOString(),
           products: (data.products ?? []).map((item) => ({

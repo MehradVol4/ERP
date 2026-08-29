@@ -36,6 +36,7 @@ const lineItemSchema = z.object({
 });
 
 const formSchema = z.object({
+  customer: z.number().optional(),
   customer_name: z.string().min(1, "Customer name is required"),
   date: z.string().min(1, "Date is required"),
   products: z.array(lineItemSchema).min(1, "Add at least one item"),
@@ -43,8 +44,11 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
+type CustomerOption = { id: number; name: string };
+
 export type SaleFormValues = {
   documentId: string;
+  customer: number | null;
   customer_name: string;
   date: string;
   products: { product: number; quantity: number; price: number }[];
@@ -69,11 +73,13 @@ function SalesForm({ sale = null }: SalesFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
+  const [customers, setCustomers] = useState<CustomerOption[]>([]);
   const isEdit = Boolean(sale?.documentId);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      customer: sale?.customer ?? undefined,
       customer_name: sale?.customer_name ?? "",
       date: sale ? toDateTimeLocal(sale.date) : toDateTimeLocal(new Date().toISOString()),
       products:
@@ -114,6 +120,26 @@ function SalesForm({ sale = null }: SalesFormProps) {
     };
   }, []);
 
+  // Load customers for the "existing customer" picker.
+  useEffect(() => {
+    let active = true;
+    axiosInstance
+      .get("/api/customers?pagination[pageSize]=100&sort=name:asc&fields[0]=name")
+      .then((response) => {
+        if (!active) return;
+        const rows: CustomerOption[] = response.data.data.map(
+          (item: CustomerOption) => ({ id: item.id, name: item.name }),
+        );
+        setCustomers(rows);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch customers:", error);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const watchedItems = form.watch("products");
   const total = (watchedItems ?? []).reduce(
     (sum, item) =>
@@ -126,6 +152,7 @@ function SalesForm({ sale = null }: SalesFormProps) {
     try {
       const payload = {
         data: {
+          customer: values.customer ?? null,
           customer_name: values.customer_name,
           date: new Date(values.date).toISOString(),
           total,
@@ -172,6 +199,47 @@ function SalesForm({ sale = null }: SalesFormProps) {
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex flex-col gap-6"
           >
+            {customers.length > 0 && (
+              <Field>
+                <FieldLabel htmlFor="customer">
+                  Existing customer (optional)
+                </FieldLabel>
+                <Controller
+                  control={form.control}
+                  name="customer"
+                  render={({ field }) => (
+                    <Select
+                      value={field.value ? String(field.value) : ""}
+                      onValueChange={(value) => {
+                        const id = Number(value);
+                        field.onChange(id);
+                        const selected = customers.find((c) => c.id === id);
+                        if (selected) {
+                          form.setValue("customer_name", selected.name, {
+                            shouldValidate: true,
+                          });
+                        }
+                      }}
+                    >
+                      <SelectTrigger id="customer">
+                        <SelectValue placeholder="Pick a saved customer, or type a name below" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {customers.map((customer) => (
+                          <SelectItem
+                            key={customer.id}
+                            value={String(customer.id)}
+                          >
+                            {customer.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </Field>
+            )}
+
             <div className="grid gap-6 sm:grid-cols-2">
               <Field>
                 <FieldLabel htmlFor="customer_name">Customer name</FieldLabel>
@@ -179,6 +247,11 @@ function SalesForm({ sale = null }: SalesFormProps) {
                   id="customer_name"
                   placeholder="Customer name"
                   {...form.register("customer_name")}
+                  onChange={(event) => {
+                    form.setValue("customer_name", event.target.value);
+                    // Typing a name detaches it from a saved customer record.
+                    form.setValue("customer", undefined);
+                  }}
                 />
                 <FieldError>
                   {form.formState.errors.customer_name?.message}

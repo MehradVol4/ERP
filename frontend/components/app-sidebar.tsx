@@ -8,6 +8,8 @@ import {
   IconSettings,
   IconTruck,
   IconShoppingCartPlus,
+  IconUsers,
+  IconArrowsExchange,
 } from "@tabler/icons-react";
 import { NavDocuments } from "@/components/nav-documents";
 import { NavMain } from "@/components/nav-main";
@@ -61,6 +63,11 @@ const data = {
       icon: <IconTruck stroke={2} />,
     },
     {
+      title: "Customers",
+      url: "/dashboard/customers",
+      icon: <IconUsers stroke={2} />,
+    },
+    {
       title: "Purchases",
       url: "/dashboard/purchases",
       icon: <IconShoppingCartPlus stroke={2} />,
@@ -69,6 +76,11 @@ const data = {
       title: "Sales",
       url: "/dashboard/sales",
       icon: <IconReportMoney stroke={2} />,
+    },
+    {
+      title: "Stock Movements",
+      url: "/dashboard/stock-movements",
+      icon: <IconArrowsExchange stroke={2} />,
     },
   ],
   navClouds: [
