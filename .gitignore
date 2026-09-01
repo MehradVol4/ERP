@@ -1,0 +1,6 @@
+# Root env for docker compose (contains secrets — never commit)
+.env
+.env.*
+!.env.example
+
+.DS_Store
