@@ -1,0 +1,38 @@
+{
+  "kind": "collectionType",
+  "collectionName": "purchases",
+  "info": {
+    "singularName": "purchase",
+    "pluralName": "purchases",
+    "displayName": "Purchase"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "reference": {
+      "type": "string"
+    },
+    "date": {
+      "type": "datetime"
+    },
+    "total": {
+      "type": "decimal"
+    },
+    "notes": {
+      "type": "text"
+    },
+    "supplier": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::supplier.supplier",
+      "inversedBy": "purchases"
+    },
+    "items": {
+      "type": "component",
+      "component": "shared.purchase-item",
+      "repeatable": true
+    }
+  }
+}

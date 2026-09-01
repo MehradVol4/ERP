@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_shared_purchase_items",
+  "info": {
+    "displayName": "PurchaseItem",
+    "icon": "package"
+  },
+  "options": {},
+  "attributes": {
+    "product": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::product.product"
+    },
+    "quantity": {
+      "type": "integer"
+    },
+    "cost": {
+      "type": "decimal"
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "sales",
+  "info": {
+    "singularName": "sale",
+    "pluralName": "sales",
+    "displayName": "Sale"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "date": {
+      "type": "datetime"
+    },
+    "total": {
+      "type": "decimal"
+    },
+    "customer_name": {
+      "type": "string"
+    },
+    "customer": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::customer.customer",
+      "inversedBy": "sales"
+    },
+    "products": {
+      "type": "component",
+      "component": "shared.sale-item",
+      "repeatable": true
+    }
+  }
+}
