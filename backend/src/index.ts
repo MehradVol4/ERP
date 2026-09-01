@@ -6,9 +6,12 @@ import { registerStockSync } from './utils/stock-sync';
 // JWT, so without these grants the collections would 403. Applied idempotently
 // on every boot so new content types work without editing the Roles screen.
 const AUTHENTICATED_GRANTS: Record<string, string[]> = {
+  'api::category.category': ['find', 'findOne', 'create', 'update', 'delete'],
+  'api::product.product': ['find', 'findOne', 'create', 'update', 'delete'],
   'api::supplier.supplier': ['find', 'findOne', 'create', 'update', 'delete'],
   'api::customer.customer': ['find', 'findOne', 'create', 'update', 'delete'],
   'api::purchase.purchase': ['find', 'findOne', 'create', 'update', 'delete'],
+  'api::sale.sale': ['find', 'findOne', 'create', 'update', 'delete'],
   'api::stock-movement.stock-movement': ['find', 'findOne', 'create', 'update', 'delete'],
 };
 

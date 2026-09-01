@@ -29,7 +29,11 @@ export async function POST(request: Request) {
     )
   }
 
-  const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL
+  // Server-side calls run inside the container, where the browser-facing
+  // NEXT_PUBLIC_STRAPI_URL (localhost:1337) points at the frontend itself.
+  // Prefer the internal service URL (e.g. http://backend:1337) when set.
+  const strapiUrl =
+    process.env.STRAPI_INTERNAL_URL || process.env.NEXT_PUBLIC_STRAPI_URL
 
   if (!strapiUrl) {
     return NextResponse.json(

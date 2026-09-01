@@ -17,15 +17,20 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
 import axiosInstance from "@/lib/axios";
+import type { Category } from "./columns";
 
 const formSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
 });
 
-//@ts-expect-error
+type NewProps = {
+  item?: Category | null;
+  onSuccess?: () => void;
+  isOpen?: boolean;
+};
 
-function New({ item = null, onSuccess, isOpen }) {
+function New({ item = null, onSuccess, isOpen }: NewProps) {
   const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

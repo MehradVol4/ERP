@@ -59,7 +59,7 @@ const Page = () => {
   const [loaded, setLoaded] = useState<LoadedPage | null>(null);
   const [filters, setFilters] = useState<CategoryFilters>({});
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState<Category | null>(null);
 
   const handleFilterChange = useCallback(
     (key: keyof CategoryFilters, value: string) => {

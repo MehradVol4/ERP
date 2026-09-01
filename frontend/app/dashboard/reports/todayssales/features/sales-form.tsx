@@ -27,7 +27,7 @@ import {
 import { PlusIcon, Trash2Icon } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import axiosInstance from "@/lib/axios";
-import type { Product } from "../../products/features/columns";
+import type { Product } from "../../../products/features/columns";
 
 const lineItemSchema = z.object({
   product: z.number().min(1, "Select a product"),

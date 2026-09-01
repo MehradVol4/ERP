@@ -64,6 +64,9 @@ services:
       PORT: 3000
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
+      # Server-side (API routes, NextAuth) reach Strapi over the Docker network.
+      # The browser still uses NEXT_PUBLIC_STRAPI_URL baked in at build time.
+      STRAPI_INTERNAL_URL: ${STRAPI_INTERNAL_URL:-http://backend:1337}
     ports:
       - "3000:3000"
 

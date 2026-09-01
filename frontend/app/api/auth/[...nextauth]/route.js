@@ -10,8 +10,14 @@ const handler = NextAuth({
                 password: { label: "Password", type: "password" },
             },
             async authorize(credentials) {
+                // Runs server-side inside the container: prefer the internal
+                // service URL (http://backend:1337) over the browser-facing
+                // NEXT_PUBLIC_STRAPI_URL, which resolves to the frontend here.
+                const strapiUrl =
+                    process.env.STRAPI_INTERNAL_URL ||
+                    process.env.NEXT_PUBLIC_STRAPI_URL;
                 const res = await fetch(
-                    `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/local`,
+                    `${strapiUrl}/api/auth/local`,
                     {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },

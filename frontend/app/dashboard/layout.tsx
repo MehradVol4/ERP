@@ -4,7 +4,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 
-export default function Page({children}) {
+export default function Page({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider
       style={
