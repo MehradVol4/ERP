@@ -1,17 +1,31 @@
-# ERP
+<div align="center">
 
-A small inventory and sales management system for a shop or trading business. It
-covers products and stock, suppliers and customers, purchases and sales, and a
-set of reports on top of them. Stock is kept in sync automatically: recording a
-sale lowers stock, recording a purchase raises it, and every change is written
-to an audit log.
+# 🏬 ERP
 
-The project is split into two apps:
+**A small inventory & sales management system for a shop or trading business.**
 
-- **`backend/`** – a [Strapi 5](https://strapi.io) API (SQLite by default).
+Products and stock · suppliers and customers · purchases and sales · live reports — with stock kept in sync automatically and every change written to an audit log.
+
+![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
+![React](https://img.shields.io/badge/React-19-149eca?logo=react&logoColor=white)
+![Strapi](https://img.shields.io/badge/Strapi-5-4945ff?logo=strapi&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwindcss&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-compose-2496ed?logo=docker&logoColor=white)
+
+</div>
+
+---
+
+Recording a sale lowers stock, recording a purchase raises it, and every change is
+written to a stock-movement ledger that the low-stock and profit views are built on.
+
+The project is a monorepo split into two apps:
+
+- **`backend/`** – a [Strapi 5](https://strapi.io) API (SQLite by default, Postgres/MySQL supported).
 - **`frontend/`** – a [Next.js](https://nextjs.org) dashboard (App Router, React 19).
 
-## Features
+## ✨ Features
 
 - **Dashboard** – revenue, profit, orders and customer totals, with a revenue
   chart and low-stock warnings.
@@ -29,21 +43,54 @@ The project is split into two apps:
 - **Settings** – currency and low-stock threshold.
 - **Auth** – email/password sign up and login (NextAuth + Strapi sessions).
 
-## Tech stack
+## 🧱 Tech stack
 
 | | |
 |---|---|
 | Frontend | Next.js, React 19, TypeScript, Tailwind CSS v4, shadcn/ui, TanStack Table, Recharts, react-hook-form + Zod, NextAuth |
 | Backend | Strapi 5, TypeScript, SQLite (Postgres/MySQL supported via env) |
+| Infra | Docker + Docker Compose (Postgres for production) |
 
-## Requirements
+## 🚀 Quick start with Docker (recommended)
 
-- Node.js 20 or newer (Strapi supports `>=20 <=26`)
-- npm
+The fastest way to run the whole stack — Postgres, backend and frontend — with one command.
 
-## Getting started
+**Requirements:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) (or Docker Engine + Compose plugin).
+
+```bash
+cp .env.example .env
+```
+
+Fill in the secrets in `.env`. Generate each one with:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(16).toString('base64'))"
+```
+
+Then bring everything up:
+
+```bash
+docker compose up --build
+```
+
+| Service | URL |
+|---|---|
+| Frontend | http://localhost:3000 |
+| Strapi API | http://localhost:1337 |
+| Strapi admin | http://localhost:1337/admin |
+
+On first run, open the Strapi admin to create the admin account, then register a
+user in the frontend and sign in. Uploaded media and the Postgres database persist
+in named volumes across rebuilds.
+
+> This compose file builds production images (`strapi start` / `next start`), so
+> code changes need a rebuild. For hot-reload development, use the manual setup below.
+
+## 🛠️ Manual setup (local development)
 
 Clone the repo, then set up the two apps. Start the backend first.
+
+**Requirements:** Node.js 20 or newer (Strapi supports `>=20 <=26`) and npm.
 
 ### 1. Backend
 
@@ -102,7 +149,7 @@ npm run dev
 
 Open `http://localhost:3000`, register an account and sign in.
 
-## Scripts
+## 📜 Scripts
 
 Backend (`backend/`):
 
@@ -121,7 +168,7 @@ Frontend (`frontend/`):
 | `npm run start` | Serve the production build |
 | `npm run lint` | Run ESLint |
 
-## How it fits together
+## 🔗 How it fits together
 
 The frontend talks to Strapi over its REST API and authenticates with a
 users-permissions JWT (managed by NextAuth). Sales and purchases carry line
@@ -130,25 +177,32 @@ items; a document-service middleware on the backend
 records a `stock-movement` row, which is what the Stock Movements ledger and the
 low-stock and profit views are built on.
 
-## Project structure
+## 📁 Project structure
 
 ```
 ERP/
-├── backend/          Strapi API
-│   └── src/
-│       ├── api/      content types (product, sale, purchase, supplier,
-│       │             customer, category, stock-movement)
-│       └── utils/    stock sync helpers
-└── frontend/         Next.js dashboard
-    ├── app/dashboard/  pages (products, sales, purchases, reports, ...)
-    ├── components/     shared UI
-    └── lib/            API client, stats and report helpers
+├── backend/              Strapi API
+│   ├── src/
+│   │   ├── api/          content types (product, sale, purchase, supplier,
+│   │   │                 customer, category, stock-movement)
+│   │   └── utils/        stock sync helpers
+│   └── Dockerfile
+├── frontend/             Next.js dashboard
+│   ├── app/dashboard/    pages (products, sales, purchases, reports, ...)
+│   ├── components/       shared UI
+│   ├── lib/              API client, stats and report helpers
+│   └── Dockerfile
+├── docker-compose.yml    Postgres + backend + frontend
+└── .env.example          compose environment template
 ```
 
-## Notes
+## 📝 Notes
 
-- SQLite is used by default and the database lives at `backend/.tmp/data.db`.
-  To use Postgres or MySQL, set the `DATABASE_*` variables (see
+- **Database.** SQLite is used by default in manual setup and lives at
+  `backend/.tmp/data.db`. The Docker Compose stack uses Postgres instead. To use
+  Postgres or MySQL manually, set the `DATABASE_*` variables (see
   `backend/config/database.ts`).
-- Currency and the low-stock threshold are per-browser display settings stored
-  in `localStorage`, configurable under **Settings**.
+- **Settings.** Currency and the low-stock threshold are per-browser display
+  settings stored in `localStorage`, configurable under **Settings**.
+- **Secrets.** Never commit real `.env` files — only the `.env.example`
+  templates are tracked.
